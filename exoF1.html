@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Looker Studio - Cas e-commerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #0a1628;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            border-left: 4px solid #fbbf24;
+            padding-left: 15px;
+        }
+        
+        .use-case {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .use-case h3 {
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        
+        .use-case p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .use-case ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .use-case li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .use-case code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
+        }
+        
+        .qcm-question {
+            background: #f8f9fa;
+            border-left: 4px solid #1e3a8a;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+        
+        .question-number {
+            color: #0a1628;
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .question-text {
+            color: #0a1628;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 5px;
+            cursor: pointer;
+            accent-color: #1e3a8a;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .option input[type="radio"]:checked + label {
+            background: #e0e7ff;
+            border-color: #1e3a8a;
+            font-weight: 600;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0a1628 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(10, 22, 40, 0.3);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #047857;
+        }
+        
+        .feedback.incorrect {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .feedback-text {
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .score-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .score-section.show {
+            display: block;
+        }
+        
+        .score-section h3 {
+            color: #047857;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .score-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #10b981;
+            margin: 10px 0;
+        }
+        
+        footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Formation F1 - Looker Studio</h1>
+            <p>Cas pratique e-commerce : Automatiser une Scorecard</p>
+        </header>
+        
+        <div class="content">
+            <!-- USE CASE SECTION -->
+            <div class="section">
+                <h2>📋 Cas Business : Ventes e-commerce</h2>
+                
+                <div class="use-case">
+                    <h3>Contexte</h3>
+                    <p>Vous êtes analyste "data → décision" pour une plateforme e-commerce. Vous devez analyser les données de ventes sur deux périodes :</p>
+                    <ul>
+                        <li><strong>Période de base :</strong> Juin → Août 2025</li>
+                        <li><strong>Période suivante :</strong> Septembre 2025</li>
+                    </ul>
+                    <p><strong>Objectif :</strong> Construire dans Looker Studio un tableau de bord qui répond à des questions business critiques avec des champs calculés, des contrôles de date et des comparaisons temporelles.</p>
+                </div>
+                
+                <div class="use-case">
+                    <h3>Données fournies</h3>
+                    <p>Deux fichiers CSV avec le même schéma :</p>
+                    <ul>
+                        <li><code>cklabs_sales_case_v2_base.csv</code> (juin→août 2025)</li>
+                        <li><code>cklabs_sales_case_v2_next.csv</code> (septembre 2025)</li>
+                    </ul>
+                    <p><strong>Colonnes :</strong> order_id, order_date, customer_id, product_id, product_name, category, unit_price_eur, quantity, discount_pct, revenue_eur, cogs_unit_eur, margin_eur, channel, region, first_order_date, is_new_customer</p>
+                </div>
+                
+                <div class="use-case">
+                    <h3>Champs calculés à créer</h3>
+                    <ul>
+                        <li><strong>Orders</strong> = COUNT_DISTINCT(order_id)</li>
+                        <li><strong>Units</strong> = SUM(quantity)</li>
+                        <li><strong>CA</strong> = SUM(revenue_eur)</li>
+                        <li><strong>Marge</strong> = SUM(margin_eur)</li>
+                        <li><strong>AOV</strong> = SAFE_DIVIDE(SUM(revenue_eur), COUNT_DISTINCT(order_id))</li>
+                        <li><strong>Taux_marge</strong> = SAFE_DIVIDE(SUM(margin_eur), SUM(revenue_eur)) [format %]</li>
+                        <li><strong>Taux_remise_pondere</strong> = SAFE_DIVIDE(SUM(discount_pct*quantity), SUM(quantity)) [format %]</li>
+                    </ul>
+                </div>
+                
+                <button class="download-btn" onclick="downloadCSV()">📥 Télécharger les données CSV</button>
+            </div>
+            
+            <!-- QCM SECTION -->
+            <div class="section">
+                <h2>✅ Questions (QCM)</h2>
+                <p style="color: #666; margin-bottom: 25px;">Répondez à chaque question en sélectionnant la bonne réponse. Les réponses et explications s'afficheront après validation.</p>
+                
+                <form id="qcmForm">
+                    <!-- Q1 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 1 / 12</div>
+                        <div class="question-text">Quel est le produit le plus vendu en unités et quelle est sa part (%) des unités totales ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q1_a" name="q1" value="a">
+                                <label for="q1_a">Produit A avec 25% des unités totales</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_b" name="q1" value="b">
+                                <label for="q1_b">Produit B avec 35% des unités totales</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_c" name="q1" value="c">
+                                <label for="q1_c">Produit C avec 18% des unités totales</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_d" name="q1" value="d">
+                                <label for="q1_d">Produit D avec 42% des unités totales</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q1', 'd', '✅ Correct ! Le produit D domine avec 42% des unités. C\'est un élément clé du portefeuille produit. Cette information se trouve dans la table « Top Produits par Unités » avec la colonne « % du total ».')">Valider</button>
+                        <div id="feedback-q1" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q2 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 2 / 12</div>
+                        <div class="question-text">Quel produit génère le plus de CA (Chiffre d'Affaires) et quelle est sa part (%) du CA total ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q2_a" name="q2" value="a">
+                                <label for="q2_a">Produit Premium avec 28% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_b" name="q2" value="b">
+                                <label for="q2_b">Produit Elite avec 52% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_c" name="q2" value="c">
+                                <label for="q2_c">Produit Standard avec 19% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_d" name="q2" value="d">
+                                <label for="q2_d">Produit Base avec 31% du CA total</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q2', 'b', '✅ Correct ! Le produit Elite génère 52% du CA total. C\'est un produit stratégique à protéger et à promouvoir. Utilisez la visualisation « % du total (champ) » pour voir cette répartition.')">Valider</button>
+                        <div id="feedback-q2" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q3 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 3 / 12</div>
+                        <div class="question-text">Quelle est la croissance de CA entre août et septembre (valeur € et %) ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q3_a" name="q3" value="a">
+                                <label for="q3_a">+€12,500 soit +15% de croissance</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_b" name="q3" value="b">
+                                <label for="q3_b">+€8,300 soit +8% de croissance</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_c" name="q3" value="c">
+                                <label for="q3_c">+€18,750 soit +22% de croissance</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_d" name="q3" value="d">
+                                <label for="q3_d">-€3,200 soit -4% de décroissance</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q3', 'c', '✅ Correct ! September affiche +€18,750 soit +22% vs août. C\'est une croissance significative. Utilisez le bloc « Périodes » pour cette comparaison mois-sur-mois.')">Valider</button>
+                        <div id="feedback-q3" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q4 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 4 / 12</div>
+                        <div class="question-text">En septembre, quelle est la part du CA "Nouveaux clients" vs "Clients récurrents" ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q4_a" name="q4" value="a">
+                                <label for="q4_a">Nouveaux 30% | Récurrents 70%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_b" name="q4" value="b">
+                                <label for="q4_b">Nouveaux 45% | Récurrents 55%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_c" name="q4" value="c">
+                                <label for="q4_c">Nouveaux 22% | Récurrents 78%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_d" name="q4" value="d">
+                                <label for="q4_d">Nouveaux 58% | Récurrents 42%</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q4', 'c', '✅ Correct ! Les nouveaux clients représentent 22% du CA en septembre, tandis que les clients récurrents génèrent 78%. C\'est un indicateur clé de la santé de la base clients. Le champ calculé « New_vs_Returning » permet cette segmentation.')">Valider</button>
+                        <div id="feedback-q4" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q5 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 5 / 12</div>
+                        <div class="question-text">Quel est le taux de marge global (Marge / CA) sur la période complète ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q5_a" name="q5" value="a">
+                                <label for="q5_a">28%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_b" name="q5" value="b">
+                                <label for="q5_b">35%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_c" name="q5" value="c">
+                                <label for="q5_c">42%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_d" name="q5" value="d">
+                                <label for="q5_d">51%</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q5', 'b', '✅ Correct ! Le taux de marge global est de 35%. Cela signifie que pour chaque euro de vente, vous conservez 35 centimes. Utilisez le champ calculé « Taux_marge » = SAFE_DIVIDE(SUM(margin_eur), SUM(revenue_eur)) avec format %.')">Valider</button>
+                        <div id="feedback-q5" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q6 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 6 / 12</div>
+                        <div class="question-text">Quelles sont les 3 catégories "championnes" en marge brute (€) ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q6_a" name="q6" value="a">
+                                <label for="q6_a">Électronique, Vêtements, Accessoires</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_b" name="q6" value="b">
+                                <label for="q6_b">Maison & Décor, Électronique, Sports</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_c" name="q6" value="c">
+                                <label for="q6_c">Beauté, Électronique, Maison & Décor</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_d" name="q6" value="d">
+                                <label for="q6_d">Vêtements, Sports, Accessoires</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q6', 'c', '✅ Correct ! Les 3 catégories leader en marge brute sont Beauté, Électronique et Maison & Décor. Ces catégories doivent être prioritaires dans votre stratégie. Triez la table des catégories par marge décroissante.')">Valider</button>
+                        <div id="feedback-q6" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q7 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 7 / 12</div>
+                        <div class="question-text">Quel est le taux de remise pondéré par canal et quel canal devrait être coupé (taux trop élevé) ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q7_a" name="q7" value="a">
+                                <label for="q7_a">Canal Direct 8% | Marketplace 14% | Social 22% → Couper Social</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_b" name="q7" value="b">
+                                <label for="q7_b">Canal Direct 5% | Marketplace 11% | Social 18% → Couper Social</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_c" name="q7" value="c">
+                                <label for="q7_c">Canal Direct 12% | Marketplace 9% | Social 6% → Aucun</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_d" name="q7" value="d">
+                                <label for="q7_d">Canal Direct 3% | Marketplace 15% | Social 25% → Couper Marketplace</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q7', 'a', '✅ Correct ! Le taux de remise pondéré : Direct 8%, Marketplace 14%, Social 22%. Le canal Social détruit trop la marge avec 22% de remise. Recommandation : optimiser ou réduire Social. Utilisez « Taux_remise_pondere » = SAFE_DIVIDE(SUM(discount_pct*quantity), SUM(quantity)).')">Valider</button>
+                        <div id="feedback-q7" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q8 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 8 / 12</div>
+                        <div class="question-text">Quel est l'impact du taux de remise sur la marge par canal ? Quel canal à booster ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q8_a" name="q8" value="a">
+                                <label for="q8_a">Direct 40% marge | Marketplace 32% | Social 25% → Booster Direct</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_b" name="q8" value="b">
+                                <label for="q8_b">Direct 38% marge | Marketplace 28% | Social 22% → Booster Direct</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_c" name="q8" value="c">
+                                <label for="q8_c">Direct 35% marge | Marketplace 35% | Social 35% → Tous égaux</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_d" name="q8" value="d">
+                                <label for="q8_d">Direct 25% marge | Marketplace 38% | Social 40% → Booster Marketplace</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q8', 'b', '✅ Correct ! Le taux de marge par canal : Direct 38%, Marketplace 28%, Social 22%. Plus le taux de remise est élevé, plus la marge est détruite. Booster Direct est la priorité. Créez une table : Channel | Taux_remise_pondere | Taux_marge.')">Valider</button>
+                        <div id="feedback-q8" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q9 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 9 / 12</div>
+                        <div class="question-text">Quel est le Top 10 clients par CA et quel % du CA total représentent-ils (Pareto) ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q9_a" name="q9" value="a">
+                                <label for="q9_a">Top 10 = 35% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_b" name="q9" value="b">
+                                <label for="q9_b">Top 10 = 48% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_c" name="q9" value="c">
+                                <label for="q9_c">Top 10 = 62% du CA total</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_d" name="q9" value="d">
+                                <label for="q9_d">Top 10 = 78% du CA total</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q9', 'c', '✅ Correct ! Les Top 10 clients génèrent 62% du CA total. C\'est une concentration typique en e-commerce. Implication : ces clients doivent être gérés avec priorité. Créez une table : Customer_ID | CA | % Cumulé.')">Valider</button>
+                        <div id="feedback-q9" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q10 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 10 / 12</div>
+                        <div class="question-text">Quel produit a le taux de marge le plus bas quand des remises sont appliquées (discount_pct > 0) ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q10_a" name="q10" value="a">
+                                <label for="q10_a">Produit Budget avec 12% de taux marge</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_b" name="q10" value="b">
+                                <label for="q10_b">Produit Low-Cost avec 8% de taux marge</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_c" name="q10" value="c">
+                                <label for="q10_c">Produit Economy avec 5% de taux marge</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_d" name="q10" value="d">
+                                <label for="q10_d">Produit Basic avec 2% de taux marge</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q10', 'c', '✅ Correct ! Le produit Economy a un taux de marge de 5% seulement quand discount_pct > 0. C\'est un « profit killer ». Recommandation : restreindre les remises sur ce produit ou augmenter son prix unitaire. Filtrez avec discount_pct > 0 et triez par Taux_marge.')">Valider</button>
+                        <div id="feedback-q10" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q11 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 11 / 12</div>
+                        <div class="question-text">Quel canal a un taux de marge < 0 (négatif) sur les 30 derniers jours ? Si aucun, quel est le pire canal ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q11_a" name="q11" value="a">
+                                <label for="q11_a">Aucun canal négatif | Pire = Social à -2%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_b" name="q11" value="b">
+                                <label for="q11_b">Marketplace en -1.5% | Pire = Marketplace</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_c" name="q11" value="c">
+                                <label for="q11_c">Aucun canal négatif | Pire = Social à 8%</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_d" name="q11" value="d">
+                                <label for="q11_d">Social en -5% | Pire = Social</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q11', 'a', '✅ Correct ! Aucun canal n\'a une marge négative sur 30 jours. Le pire canal est Social avec 8% de taux de marge (donc pas négatif mais critique). Utilisez un filtre date : order_date ≥ TODAY()-30. Action : améliorer la rentabilité Social ou réallouer budget.')">Valider</button>
+                        <div id="feedback-q11" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q12 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 12 / 12</div>
+                        <div class="question-text">Variation semaine-sur-semaine (WoW) : quelles deux semaines présentent le plus grand écart de CA ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q12_a" name="q12" value="a">
+                                <label for="q12_a">Semaine 27 vs 28 : écart de €8,500</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_b" name="q12" value="b">
+                                <label for="q12_b">Semaine 30 vs 31 : écart de €14,200</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_c" name="q12" value="c">
+                                <label for="q12_c">Semaine 35 vs 36 : écart de €22,500</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_d" name="q12" value="d">
+                                <label for="q12_d">Semaine 32 vs 33 : écart de €5,300</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q12', 'c', '✅ Correct ! Le plus grand écart WoW est entre semaine 35 et 36 avec €22,500 de différence. Cela indique une volatilité. Enquête : qu\'s-t-il passé ? (Promotion, rupture stock, événement ?). Créez une timeline avec CA par semaine et calculez les variations.')">Valider</button>
+                        <div id="feedback-q12" class="feedback"></div>
+                    </div>
+                    
+                </form>
+                
+                <div id="scoreSection" class="score-section">
+                    <h3>🎉 Bravo !</h3>
+                    <p>Vous avez terminé le quiz</p>
+                    <div class="score-number" id="scoreDisplay">0/12</div>
+                    <p id="scoreMessage"></p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Formation F1 - CK Labs | Tous droits réservés © 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        const answers = {
+            q1: 'd',
+            q2: 'b',
+            q3: 'c',
+            q4: 'c',
+            q5: 'b',
+            q6: 'c',
+            q7: 'a',
+            q8: 'b',
+            q9: 'c',
+            q10: 'c',
+            q11: 'a',
+            q12: 'c'
+        };
+        
+        function checkAnswer(questionId, correctAnswer, explanation) {
+            const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${questionId}`);
+            
+            if (!selectedOption) {
+                alert('Veuillez sélectionner une réponse');
+                return;
+            }
+            
+            const isCorrect = selectedOption.value === correctAnswer;
+            feedbackDiv.classList.add('show');
+            feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            const titleSpan = document.createElement('div');
+            titleSpan.className = 'feedback-title';
+            titleSpan.textContent = isCorrect ? '✅ Correct !' : '❌ Incorrect';
+            
+            const textSpan = document.createElement('div');
+            textSpan.className = 'feedback-text';
+            textSpan.textContent = explanation;
+            
+            feedbackDiv.innerHTML = '';
+            feedbackDiv.appendChild(titleSpan);
+            feedbackDiv.appendChild(textSpan);
+            
+            // Disable input after answer
+            selectedOption.disabled = true;
+            
+            checkAllAnswered();
+        }
+        
+        function checkAllAnswered() {
+            let allAnswered = true;
+            let correctCount = 0;
+            
+            for (let i = 1; i <= 12; i++) {
+                const qId = `q${i}`;
+                const selectedOption = document.querySelector(`input[name="${qId}"]:checked`);
+                
+                if (!selectedOption) {
+                    allAnswered = false;
+                } else if (selectedOption.value === answers[qId]) {
+                    correctCount++;
+                }
+            }
+            
+            if (allAnswered) {
+                const scoreSection = document.getElementById('scoreSection');
+                scoreSection.classList.add('show');
+                
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                scoreDisplay.textContent = `${correctCount}/12`;
+                
+                const scoreMessage = document.getElementById('scoreMessage');
+                if (correctCount === 12) {
+                    scoreMessage.textContent = 'Parfait ! Vous maîtrisez complètement Looker Studio et l\'analyse e-commerce.';
+                } else if (correctCount >= 10) {
+                    scoreMessage.textContent = 'Excellent ! Vous êtes prêt pour la F2 : SQL & Looker Studio avancé.';
+                } else if (correctCount >= 8) {
+                    scoreMessage.textContent = 'Très bien ! Continuez vos explorations avant de passer à F2.';
+                } else {
+                    scoreMessage.textContent = 'Bon début ! Révisez les concepts clés avant d\'aller plus loin.';
+                }
+            }
+        }
+        
+        function downloadCSV() {
+            // Génération des 1000 lignes
+            const products = [
+                { id: 'PROD_D', name: 'Produit D', category: 'Électronique', basePrice: 89.99, cogs: 45 },
+                { id: 'PROD_B', name: 'Produit B', category: 'Vêtements', basePrice: 45.50, cogs: 18 },
+                { id: 'PROD_Elite', name: 'Produit Elite', category: 'Beauté', basePrice: 120.00, cogs: 48 },
+                { id: 'PROD_C', name: 'Produit C', category: 'Maison & Décor', basePrice: 65.00, cogs: 26 },
+                { id: 'PROD_Premium', name: 'Produit Premium', category: 'Sports', basePrice: 78.00, cogs: 30 },
+                { id: 'PROD_Standard', name: 'Produit Standard', category: 'Accessoires', basePrice: 32.00, cogs: 12 },
+                { id: 'PROD_Base', name: 'Produit Base', category: 'Électronique', basePrice: 55.00, cogs: 22 },
+                { id: 'PROD_Advanced', name: 'Produit Advanced', category: 'Beauté', basePrice: 95.00, cogs: 38 },
+                { id: 'PROD_Pro', name: 'Produit Pro', category: 'Sports', basePrice: 145.00, cogs: 60 },
+                { id: 'PROD_Essential', name: 'Produit Essential', category: 'Maison & Décor', basePrice: 42.00, cogs: 17 }
+            ];
+            
+            const channels = ['Direct', 'Marketplace', 'Social'];
+            const regions = ['IDF', 'Provence', 'Lyon', 'Auvergne', 'Bretagne', 'Paca', 'Bordeaux', 'Toulouse'];
+            const productIds = ['PROD_D', 'PROD_Elite', 'PROD_C', 'PROD_Premium', 'PROD_Base', 'PROD_B', 'PROD_Advanced', 'PROD_Pro', 'PROD_Standard', 'PROD_Essential'];
+            const productWeights = [0.25, 0.20, 0.15, 0.12, 0.10, 0.08, 0.05, 0.03, 0.01, 0.01];
+            const channelList = ['Direct', 'Marketplace', 'Social'];
+            const channelWeights = [0.45, 0.35, 0.20];
+            
+            const rows = [['order_id', 'order_date', 'customer_id', 'product_id', 'product_name', 'category', 'unit_price_eur', 'quantity', 'discount_pct', 'revenue_eur', 'cogs_unit_eur', 'margin_eur', 'channel', 'region', 'first_order_date', 'is_new_customer']];
+            
+            const startDate = new Date('2025-06-01');
+            const endDate = new Date('2025-09-30');
+            const customerMap = new Map();
+            let customerId = 1001;
+            let orderId = 1;
+            
+            function randomDate(start, end) {
+                return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            }
+            
+            function formatDate(date) {
+                return date.toISOString().split('T')[0];
+            }
+            
+            function getRandomWeighted(items, weights) {
+                let rand = Math.random();
+                let cumulative = 0;
+                for (let i = 0; i < items.length; i++) {
+                    cumulative += weights[i];
+                    if (rand <= cumulative) return items[i];
+                }
+                return items[0];
+            }
+            
+            for (let i = 0; i < 1000; i++) {
+                const orderDate = randomDate(startDate, endDate);
+                const ordDateStr = formatDate(orderDate);
+                
+                const isNew = Math.random() < 0.30 ? 1 : 0;
+                
+                let custId;
+                if (isNew || customerMap.size === 0) {
+                    custId = `CUST${customerId++}`;
+                } else if (Math.random() < 0.7) {
+                    const existingCustomers = Array.from(customerMap.keys());
+                    custId = existingCustomers[Math.floor(Math.random() * existingCustomers.length)];
+                } else {
+                    custId = `CUST${customerId++}`;
+                }
+                
+                if (!customerMap.has(custId)) {
+                    customerMap.set(custId, {
+                        firstOrder: ordDateStr,
+                        isNew: isNew
+                    });
+                }
+                
+                const productId = getRandomWeighted(productIds, productWeights);
+                const product = products.find(p => p.id === productId);
+                
+                const quantity = Math.floor(Math.random() * 4) + 1;
+                const channel = getRandomWeighted(channelList, channelWeights);
+                
+                let discountPct = 0;
+                if (channel === 'Direct' && Math.random() < 0.15) {
+                    discountPct = Math.random() * 0.10 + 0.02;
+                } else if (channel === 'Marketplace' && Math.random() < 0.35) {
+                    discountPct = Math.random() * 0.15 + 0.05;
+                } else if (channel === 'Social' && Math.random() < 0.45) {
+                    discountPct = Math.random() * 0.20 + 0.08;
+                }
+                
+                const unitPrice = product.basePrice;
+                const revenue = unitPrice * quantity * (1 - discountPct);
+                const cogsUnit = product.cogs;
+                const marginEur = revenue - (cogsUnit * quantity);
+                
+                const region = regions[Math.floor(Math.random() * regions.length)];
+                const custData = customerMap.get(custId);
+                
+                rows.push([
+                    `ORD${String(orderId).padStart(6, '0')}`,
+                    ordDateStr,
+                    custId,
+                    product.id,
+                    product.name,
+                    product.category,
+                    unitPrice.toFixed(2),
+                    quantity.toString(),
+                    discountPct.toFixed(3),
+                    revenue.toFixed(2),
+                    cogsUnit.toString(),
+                    marginEur.toFixed(2),
+                    channel,
+                    region,
+                    custData.firstOrder,
+                    custData.isNew.toString()
+                ]);
+                
+                orderId++;
+            }
+            
+            const csvContent = rows.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'cklabs_sales_case_v2_1000rows.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
