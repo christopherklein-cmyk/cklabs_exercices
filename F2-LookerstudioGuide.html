@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Looker Studio - CK LABS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+background-color: #0a1628;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+padding: 20px;
+}
+.carousel-container { max-width: 900px; width: 100%; }
+.slide {
+background: white;
+border-radius: 16px;
+padding: 60px 50px;
+min-height: 650px;
+display: none;
+flex-direction: column;
+justify-content: flex-start;
+position: relative;
+box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+overflow-y: auto;
+}
+.slide.active { display: flex; }
+.logo {
+position: absolute;
+top: 30px;
+right: 50px;
+font-weight: 800;
+font-size: 14px;
+letter-spacing: 2px;
+color: #1e3a8a;
+}
+.slide-1 {
+background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 100%);
+color: white;
+text-align: center;
+justify-content: center;
+}
+.slide-1 .logo { color: white; }
+.slide-1 .subtitle {
+font-size: 20px;
+font-weight: 500;
+margin-bottom: 20px;
+opacity: 0.9;
+}
+.slide-1 .main-title {
+font-size: 64px;
+font-weight: 900;
+line-height: 1.1;
+margin-bottom: 40px;
+}
+.slide-1 .cta-badge {
+display: inline-block;
+padding: 15px 40px;
+background-color: #fbbf24;
+color: #0a1628;
+border-radius: 50px;
+font-size: 18px;
+font-weight: 700;
+}
+.slide-light {
+background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+}
+.slide-dark {
+background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 100%);
+color: white;
+}
+.slide-dark .logo { color: white; }
+.title {
+font-size: 42px;
+font-weight: 900;
+color: #0a1628;
+margin-bottom: 35px;
+text-align: center;
+}
+.slide-dark .title { color: white; }
+.intro-text {
+font-size: 18px;
+line-height: 1.8;
+margin-bottom: 30px;
+opacity: 0.95;
+}
+.content-text {
+font-size: 17px;
+line-height: 1.8;
+margin-bottom: 20px;
+opacity: 0.95;
+}
+.content-text strong {
+font-weight: 700;
+color: #fbbf24;
+}
+.slide-light .content-text strong {
+color: #1e3a8a;
+}
+.chart-types-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 20px;
+margin-top: 30px;
+}
+.chart-card {
+background: white;
+border-radius: 12px;
+padding: 20px;
+text-align: center;
+border: 2px solid transparent;
+transition: all 0.3s;
+box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.chart-card:hover {
+transform: translateY(-5px);
+border-color: #1e3a8a;
+box-shadow: 0 12px 24px rgba(30, 58, 138, 0.2);
+}
+.chart-icon {
+font-size: 36px;
+margin-bottom: 10px;
+}
+.chart-name {
+font-size: 16px;
+font-weight: 700;
+color: #0a1628;
+margin-bottom: 8px;
+}
+.chart-use {
+font-size: 13px;
+color: #64748b;
+line-height: 1.5;
+}
+.dashboard-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+grid-template-rows: repeat(3, 120px);
+gap: 15px;
+margin: 30px 0;
+background: rgba(255, 255, 255, 0.05);
+padding: 20px;
+border-radius: 12px;
+}
+.dashboard-item {
+background: rgba(251, 191, 36, 0.2);
+border: 2px solid #fbbf24;
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 14px;
+font-weight: 700;
+color: #fbbf24;
+text-align: center;
+padding: 10px;
+}
+.dashboard-item.kpi {
+grid-column: span 1;
+background: rgba(59, 130, 246, 0.2);
+border-color: #3b82f6;
+color: #3b82f6;
+}
+.dashboard-item.chart {
+grid-column: span 2;
+}
+.dashboard-item.table {
+grid-column: span 4;
+}
+.highlight-box {
+background: rgba(251, 191, 36, 0.15);
+border: 2px solid #fbbf24;
+border-radius: 16px;
+padding: 30px;
+margin-top: 30px;
+}
+.highlight-box h3 {
+font-size: 24px;
+margin-bottom: 15px;
+color: #fbbf24;
+font-weight: 700;
+}
+.tips-container {
+display: grid;
+gap: 20px;
+margin-top: 30px;
+}
+.tip-box {
+background: rgba(255, 255, 255, 0.1);
+border-left: 4px solid #fbbf24;
+padding: 20px;
+border-radius: 8px;
+}
+.tip-box .tip-title {
+font-size: 18px;
+font-weight: 700;
+margin-bottom: 10px;
+color: #fbbf24;
+}
+.formula-box {
+background: #1a1a2e;
+border-radius: 8px;
+padding: 15px 20px;
+margin: 15px 0;
+font-family: 'Courier New', monospace;
+font-size: 14px;
+color: #4ecdc4;
+overflow-x: auto;
+}
+.do-dont-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 25px;
+margin-top: 30px;
+}
+.do-box {
+background: rgba(16, 185, 129, 0.1);
+border: 2px solid #10b981;
+border-radius: 12px;
+padding: 20px;
+}
+.dont-box {
+background: rgba(239, 68, 68, 0.1);
+border: 2px solid #ef4444;
+border-radius: 12px;
+padding: 20px;
+}
+.do-box h4 {
+color: #10b981;
+font-size: 18px;
+margin-bottom: 15px;
+}
+.dont-box h4 {
+color: #ef4444;
+font-size: 18px;
+margin-bottom: 15px;
+}
+.checklist-item {
+padding: 10px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.checklist-item:last-child {
+border-bottom: none;
+}
+.step-number {
+display: inline-block;
+width: 30px;
+height: 30px;
+background: #fbbf24;
+color: #0a1628;
+border-radius: 50%;
+text-align: center;
+line-height: 30px;
+font-weight: 700;
+margin-right: 15px;
+}
+.navigation {
+position: fixed;
+bottom: 30px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+align-items: center;
+gap: 20px;
+z-index: 100;
+}
+.nav-btn {
+padding: 12px 24px;
+background-color: #1e3a8a;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+.nav-btn:hover:not(:disabled) {
+background-color: #3b82f6;
+transform: translateY(-2px);
+}
+.nav-btn:disabled {
+opacity: 0.4;
+cursor: not-allowed;
+}
+.dots {
+display: flex;
+gap: 8px;
+}
+.dot {
+width: 10px;
+height: 10px;
+background-color: rgba(255, 255, 255, 0.3);
+border-radius: 50%;
+cursor: pointer;
+transition: all 0.3s;
+}
+.dot.active {
+background-color: #fbbf24;
+transform: scale(1.3);
+}
+</style>
+</head>
+<body>
+<div class="carousel-container">
+
+<!-- Slide 1: Titre -->
+<div class="slide slide-1 active">
+<div class="logo">CK LABS</div>
+<div class="subtitle">Module 3</div>
+<div class="main-title">DASHBOARD<br>LOOKER STUDIO</div>
+<div class="cta-badge">De la Data à l'Impact Business</div>
+</div>
+
+<!-- Slide 2: Les 3 niveaux de dashboards -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">3 Niveaux de Dashboards</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+Chaque niveau répond à un besoin différent
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.1); border: 2px solid #3b82f6; border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+<h3 style="color: #3b82f6; font-size: 20px; margin-bottom: 15px;">🎯 Niveau 1: Opérationnel</h3>
+<div class="content-text">
+<strong>Pour qui :</strong> Équipes terrain, managers directs<br>
+<strong>Fréquence :</strong> Quotidien / Temps réel<br>
+<strong>Focus :</strong> Actions immédiates, alertes, anomalies<br>
+<strong>Exemple :</strong> Stock rupture, taux conversion jour, tickets support
+</div>
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.1); border: 2px solid #10b981; border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+<h3 style="color: #10b981; font-size: 20px; margin-bottom: 15px;">📊 Niveau 2: Tactique</h3>
+<div class="content-text">
+<strong>Pour qui :</strong> Chefs de projet, responsables équipe<br>
+<strong>Fréquence :</strong> Hebdomadaire / Mensuel<br>
+<strong>Focus :</strong> Tendances, comparaisons, objectifs<br>
+<strong>Exemple :</strong> Performance campagnes, évolution CA, NPS mensuel
+</div>
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.1); border: 2px solid #fbbf24; border-radius: 16px; padding: 25px;">
+<h3 style="color: #fbbf24; font-size: 20px; margin-bottom: 15px;">🚀 Niveau 3: Stratégique</h3>
+<div class="content-text">
+<strong>Pour qui :</strong> Direction, C-Level, Board<br>
+<strong>Fréquence :</strong> Trimestriel / Annuel<br>
+<strong>Focus :</strong> KPIs clés, ROI, vision macro<br>
+<strong>Exemple :</strong> Parts de marché, LTV/CAC, croissance YoY
+</div>
+</div>
+</div>
+
+<!-- Slide 3: Structure idéale d'un dashboard -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Structure Idéale d'un Dashboard</div>
+<div class="intro-text" style="text-align: center;">
+La règle des <strong>5-7-9</strong> : 5 KPIs, 7 graphiques max, 9 secondes pour comprendre
+</div>
+
+<div class="dashboard-grid">
+<div class="dashboard-item kpi">KPI 1<br>Revenue</div>
+<div class="dashboard-item kpi">KPI 2<br>Users</div>
+<div class="dashboard-item kpi">KPI 3<br>Conversion</div>
+<div class="dashboard-item kpi">KPI 4<br>Retention</div>
+<div class="dashboard-item chart" style="grid-row: span 2;">Évolution<br>Temporelle</div>
+<div class="dashboard-item chart" style="grid-row: span 2;">Répartition<br>Catégories</div>
+<div class="dashboard-item table">Table Détaillée avec Drill-Down</div>
+</div>
+
+<div class="content-text" style="text-align: center; margin-top: 20px;">
+<strong>Zone 1 (Haut) :</strong> KPIs clés - Impact immédiat<br>
+<strong>Zone 2 (Milieu) :</strong> Tendances & Comparaisons - Context<br>
+<strong>Zone 3 (Bas) :</strong> Détails & Actions - Exploration
+</div>
+</div>
+
+<!-- Slide 4: Granularité & Itération -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Trouver la Bonne Granularité 🎯</div>
+<div class="intro-text" style="text-align: center;">
+<strong>C'est en testant dans le dashboard qu'on a la vision claire</strong>
+</div>
+
+<div style="background: white; border: 2px solid #3b82f6; border-radius: 12px; padding: 30px; margin-bottom: 25px;">
+<h3 style="color: #1e3a8a; font-size: 20px; margin-bottom: 20px;">🔄 Process Itératif SQL ↔ Dashboard</h3>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Iteration 1:</strong> Données brutes → Trop lent, trop de détail<br>
+<strong>Iteration 2:</strong> Agrégé par mois → Perte de flexibilité<br>
+<strong>Iteration 3:</strong> Agrégé par jour + catégorie → Sweet spot ! ✅
+</div>
+<div class="content-text">
+💡 <strong>Astuce:</strong> Commencez par jour/produit, puis ajustez selon :<br>
+• Volume de données (< 100K lignes idéal)<br>
+• Besoins de drill-down<br>
+• Performance du dashboard
+</div>
+</div>
+
+<div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 12px; padding: 25px;">
+<h3 style="color: #d97706; font-size: 20px; margin-bottom: 15px;">⚠️ Ne Perdez Jamais le Business de Vue</h3>
+<div class="content-text">
+<strong>Piège fréquent:</strong> S'enfermer dans la technique<br>
+• "Cette jointure est impossible" → Vraiment ? Contournez !<br>
+• "Ça prend 3 jours à coder" → Une solution 80% en 2h ?<br>
+• "C'est pas optimal" → Mais ça répond au besoin ?
+</div>
+<div class="content-text" style="margin-top: 15px; font-weight: 700; color: #fbbf24;">
+Remember: Flexibilité d'usage + Vitesse de delivery = Impact Business
+</div>
+</div>
+</div>
+
+<!-- Slide 5: Choix des graphiques -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Choisir le Bon Graphique</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+<strong>Chaque donnée a son graphique idéal</strong>
+</div>
+
+<div class="chart-types-grid">
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">📈</div>
+<div class="chart-name" style="color: #fbbf24;">Line Chart</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">Évolution temporelle<br>Tendances</div>
+</div>
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">📊</div>
+<div class="chart-name" style="color: #fbbf24;">Bar Chart</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">Comparaisons<br>Rankings</div>
+</div>
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">🥧</div>
+<div class="chart-name" style="color: #fbbf24;">Pie/Donut</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">Répartition<br>Parts (< 5 items)</div>
+</div>
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">🎯</div>
+<div class="chart-name" style="color: #fbbf24;">Scorecard</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">KPI unique<br>Métrique clé</div>
+</div>
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">📋</div>
+<div class="chart-name" style="color: #fbbf24;">Table</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">Détails<br>Export data</div>
+</div>
+<div class="chart-card" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">
+<div class="chart-icon">🗺️</div>
+<div class="chart-name" style="color: #fbbf24;">Heatmap</div>
+<div class="chart-use" style="color: rgba(255, 255, 255, 0.8);">Patterns<br>Corrélations</div>
+</div>
+</div>
+
+<div class="highlight-box">
+<h3>⚠️ Règle d'Or</h3>
+<div class="content-text">
+<strong>Jamais plus de 3 types de graphiques différents</strong> sur la même page. La cohérence visuelle > la variété.
+</div>
+</div>
+</div>
+
+<!-- Slide 5: KPIs efficaces -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">KPIs Efficaces avec Scorecards</div>
+<div class="intro-text" style="text-align: center;">
+Un bon KPI = <strong>Clair + Contextualisé + Actionnable</strong>
+</div>
+
+<div style="background: white; border: 2px solid #3b82f6; border-radius: 12px; padding: 30px; margin-bottom: 25px;">
+<h3 style="color: #1e3a8a; font-size: 20px; margin-bottom: 20px;">🎯 Anatomie d'un Scorecard Parfait</h3>
+<div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 8px; margin-bottom: 15px;">
+<div style="font-size: 48px; font-weight: 900; color: #1e3a8a;">€125.4K</div>
+<div style="font-size: 14px; color: #64748b; margin: 5px 0;">Revenue MTD</div>
+<div style="font-size: 20px; color: #10b981; font-weight: 700;">↑ +23.5%</div>
+<div style="font-size: 12px; color: #64748b;">vs. mois précédent</div>
+</div>
+<div class="content-text">
+<strong>Elements clés :</strong><br>
+• Valeur principale en gros et gras<br>
+• Libellé court et explicite<br>
+• Comparaison temporelle (%, valeur absolue)<br>
+• Couleur conditionnelle (vert = bien, rouge = alerte)
+</div>
+</div>
+
+<div class="do-dont-grid">
+<div class="do-box">
+<h4>✅ À Faire</h4>
+<ul style="list-style: none; padding: 0;">
+<li style="margin-bottom: 10px;">• Arrondir intelligemment (125K vs 125,432.67)</li>
+<li style="margin-bottom: 10px;">• Utiliser des compact numbers</li>
+<li style="margin-bottom: 10px;">• Ajouter sparklines pour la tendance</li>
+<li>• Conditional formatting subtil</li>
+</ul>
+</div>
+<div class="dont-box">
+<h4>❌ À Éviter</h4>
+<ul style="list-style: none; padding: 0;">
+<li style="margin-bottom: 10px;">• Trop de décimales inutiles</li>
+<li style="margin-bottom: 10px;">• KPIs sans contexte temporel</li>
+<li style="margin-bottom: 10px;">• Mélanges d'unités (€, %, #)</li>
+<li>• Plus de 7 KPIs sur une ligne</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- Slide 6: Calculated Fields -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Pré-calculé vs À la Volée ⚖️</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+<strong>Le choix dépend de l'usage</strong>
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.1); border: 2px solid #10b981; border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+<h3 style="color: #10b981; font-size: 20px; margin-bottom: 15px;">📊 À Calculer dans Looker (À la volée)</h3>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Ratios & Moyennes :</strong><br>
+• Panier moyen = SUM(Revenue) / SUM(Orders)<br>
+• Taux de conversion = SUM(Conversions) / SUM(Visitors)<br>
+<span style="font-size: 14px; opacity: 0.9;">→ Évite les problèmes de moyennes pondérées</span>
+</div>
+<div class="content-text">
+<strong>KPIs dépendant des filtres :</strong><br>
+• Status client selon période sélectionnée<br>
+• KPIs financiers qui changent avec la date range<br>
+<span style="font-size: 14px; opacity: 0.9;">→ S'adaptent dynamiquement aux filtres utilisateur</span>
+</div>
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.1); border: 2px solid #3b82f6; border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+<h3 style="color: #3b82f6; font-size: 20px; margin-bottom: 15px;">🔧 À Pré-calculer dans SQL</h3>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Status fixes :</strong><br>
+• Segment client (VIP, Regular, New)<br>
+• Catégorisation produit<br>
+<span style="font-size: 14px; opacity: 0.9;">→ Ne dépendent pas de la période sélectionnée</span>
+</div>
+<div class="content-text">
+<strong>Calculs complexes/coûteux :</strong><br>
+• Scores de propension<br>
+• Calculs avec multiples jointures<br>
+<span style="font-size: 14px; opacity: 0.9;">→ Trop lourds pour Looker, risque de timeout</span>
+</div>
+</div>
+
+<div class="highlight-box">
+<h3>💡 Formules Essentielles dans Looker</h3>
+<div class="formula-box" style="margin-bottom: 15px;">
+<span style="color: #ff6b6b;">-- Ratio (toujours à la volée)</span><br>
+SUM(metric1) / NULLIF(SUM(metric2), 0)
+</div>
+<div class="formula-box" style="margin-bottom: 15px;">
+<span style="color: #ff6b6b;">-- Évolution période</span><br>
+(SUM(Revenue) - LAG(SUM(Revenue), 1)) / LAG(SUM(Revenue), 1) * 100
+</div>
+<div class="formula-box">
+<span style="color: #ff6b6b;">-- Segmentation conditionnelle</span><br>
+CASE WHEN condition THEN 'Segment A' ELSE 'Segment B' END
+</div>
+</div>
+</div>
+
+<!-- Slide 7: Filtres et Interactivité -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Filtres & Interactivité</div>
+<div class="intro-text" style="text-align: center;">
+Un dashboard statique = un dashboard mort
+</div>
+
+<div style="background: white; border: 2px solid #3b82f6; border-radius: 12px; padding: 30px; margin-bottom: 25px;">
+<h3 style="color: #1e3a8a; font-size: 20px; margin-bottom: 20px;">🎛️ Hiérarchie des Filtres</h3>
+<div class="content-text" style="margin-bottom: 15px;">
+<span class="step-number">1</span><strong>Date Range Control</strong> - Toujours en haut, toujours visible
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+<span class="step-number">2</span><strong>Filtres Globaux</strong> - Région, Produit, Segment (3 max)
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+<span class="step-number">3</span><strong>Drill-down</strong> - Click sur graphique → filter automatique
+</div>
+<div class="content-text">
+<span class="step-number">4</span><strong>Cross-filtering</strong> - Selection dans un chart filtre les autres
+</div>
+</div>
+
+<div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 12px; padding: 25px;">
+<h3 style="color: #d97706; font-size: 20px; margin-bottom: 15px;">💡 Best Practices Filtres</h3>
+<div class="content-text">
+• <strong>Drop-down vs List :</strong> Drop-down si > 5 options<br>
+• <strong>Single vs Multi-select :</strong> Multi uniquement si nécessaire<br>
+• <strong>Default values :</strong> Toujours pré-remplir (ex: Last 30 days)<br>
+• <strong>Nommage clair :</strong> "Sélectionner période" > "date_range"<br>
+• <strong>Reset button :</strong> Permettre retour aux valeurs par défaut
+</div>
+</div>
+</div>
+
+<!-- Slide 8: Design & UX -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Design & User Experience</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+<strong>Moins c'est plus</strong> - Privilégiez la clarté
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 30px;">
+<h3 style="color: #fbbf24; font-size: 24px; margin-bottom: 25px;">🎨 Charte Visuelle Minimaliste</h3>
+
+<div class="content-text" style="margin-bottom: 20px;">
+<strong>Couleurs (Max 5)</strong><br>
+• Primaire: Bleu business (#1e3a8a)<br>
+• Succès: Vert validation (#10b981)<br>
+• Alerte: Rouge attention (#ef4444)<br>
+• Neutre: Gris données (#64748b)<br>
+• Accent: Jaune focus (#fbbf24)
+</div>
+
+<div class="content-text" style="margin-bottom: 20px;">
+<strong>Typographie</strong><br>
+• Titres: Sans-serif bold, 18-24px<br>
+• Données: Monospace pour les nombres<br>
+• Labels: Sans-serif regular, 12-14px<br>
+• Hiérarchie: 3 tailles max
+</div>
+
+<div class="content-text" style="margin-bottom: 20px;">
+<strong>Espacement</strong><br>
+• Marges consistantes: 20px entre sections<br>
+• Padding interne: 10-15px<br>
+• Alignement: Grille invisible 12 colonnes<br>
+• Ratio blanc: 30-40% de l'espace vide
+</div>
+
+<div class="content-text">
+<strong>Règle du 3-30-300</strong><br>
+• 3 secondes pour comprendre le message principal<br>
+• 30 secondes pour saisir les insights clés<br>
+• 300 secondes pour explorer en détail
+</div>
+</div>
+</div>
+
+<!-- Slide 9: Erreurs Fréquentes -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Les 7 Péchés du Dashboard</div>
+<div class="intro-text" style="text-align: center;">
+Évitez ces erreurs qui tuent l'adoption
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 1. Dashboard "Sapin de Noël"</h4>
+<div class="content-text">Trop de couleurs, trop de graphiques = confusion totale</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 2. Métriques Vanity</h4>
+<div class="content-text">Page views, likes... Privilégiez les métriques actionnables</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 3. Pas de Contexte Temporel</h4>
+<div class="content-text">Un chiffre seul ne veut rien dire. Toujours comparer !</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 4. Graphiques 3D</h4>
+<div class="content-text">Jolis mais illisibles. Restez en 2D, toujours.</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 5. Trop de Drill-down</h4>
+<div class="content-text">Si ça prend > 3 clics, c'est trop profond</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 6. Pas de Documentation</h4>
+<div class="content-text">Ajoutez tooltips et définitions des KPIs</div>
+</div>
+
+<div style="background: #fee2e2; border: 2px solid #dc2626; border-radius: 12px; padding: 20px;">
+<h4 style="color: #dc2626; margin-bottom: 10px;">🚫 7. Performance Négligée</h4>
+<div class="content-text">> 5 sec de chargement = dashboard abandonné</div>
+</div>
+</div>
+
+<!-- Slide 11: Processus de création -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Processus de Création Step-by-Step</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+De l'idée au dashboard en production <strong>(avec itérations !)</strong>
+</div>
+
+<div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 30px;">
+<div class="checklist-item">
+<span class="step-number">1</span>
+<strong>Discovery (1h)</strong><br>
+Qui ? Quoi ? Pourquoi ? Fréquence ? Actions attendues ?
+</div>
+
+<div class="checklist-item">
+<span class="step-number">2</span>
+<strong>Wireframe (30min)</strong><br>
+Papier/Excalidraw : structure, hiérarchie, flow
+</div>
+
+<div class="checklist-item">
+<span class="step-number">3</span>
+<strong>Data Prep v1 (2h)</strong><br>
+SQL initial, test performances, validation données
+</div>
+
+<div class="checklist-item">
+<span class="step-number">4</span>
+<strong>Construction v1 (1h)</strong><br>
+Premier jet rapide pour tester la granularité
+</div>
+
+<div class="checklist-item" style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 15px; margin: 10px 0;">
+<span class="step-number">🔄</span>
+<strong>Itérations (2-4h)</strong><br>
+• Découverte de nouveaux besoins<br>
+• Ajustement granularité SQL<br>
+• Test de nouvelles métriques<br>
+<span style="font-size: 14px; opacity: 0.9;">→ Les meilleures insights viennent pendant la construction !</span>
+</div>
+
+<div class="checklist-item">
+<span class="step-number">5</span>
+<strong>Finalisation (1h)</strong><br>
+KPIs → Charts → Tables → Filtres → Style
+</div>
+
+<div class="checklist-item">
+<span class="step-number">6</span>
+<strong>Test & Review (1h)</strong><br>
+Avec utilisateur final, edge cases, mobile
+</div>
+
+<div class="checklist-item" style="border: none;">
+<span class="step-number">7</span>
+<strong>Deploy & Monitor</strong><br>
+Partage, permissions, usage analytics
+</div>
+</div>
+
+<div class="content-text" style="margin-top: 20px; text-align: center; background: rgba(251, 191, 36, 0.15); padding: 15px; border-radius: 12px;">
+<strong>La beauté de la data :</strong> Le besoin évolue constamment. Acceptez-le, embrassez-le !
+</div>
+</div>
+
+<!-- Slide 11: Optimisation Performance -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Performance & Optimisation</div>
+<div class="intro-text" style="text-align: center;">
+Un dashboard lent = un dashboard mort
+</div>
+
+<div style="background: #dcfce7; border: 2px solid #10b981; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+<h3 style="color: #059669; font-size: 20px; margin-bottom: 15px;">⚡ Techniques d'Optimisation</h3>
+<div class="content-text" style="margin-bottom: 12px;">
+<strong>1. Cache Strategy</strong><br>
+• Enable query cache: 12h pour données stables<br>
+• Refresh schedule: Nuit pour dashboards exec
+</div>
+<div class="content-text" style="margin-bottom: 12px;">
+<strong>2. Data Volume</strong><br>
+• Extract → Limite 100K lignes max dans Looker<br>
+• Aggregate → Pré-calcul dans SQL toujours
+</div>
+<div class="content-text" style="margin-bottom: 12px;">
+<strong>3. Calculated Fields</strong><br>
+• Minimiser leur usage (< 5 par dashboard)<br>
+• Préférer CASE simple vs formules complexes
+</div>
+<div class="content-text">
+<strong>4. Visual Elements</strong><br>
+• Images optimisées (< 100KB)<br>
+• Pas plus de 15 composants par page
+</div>
+</div>
+
+<div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 12px; padding: 25px;">
+<h3 style="color: #d97706; font-size: 20px; margin-bottom: 15px;">🔧 Checklist Performance</h3>
+<div class="content-text">
+☐ Temps de chargement < 3 secondes<br>
+☐ Extraction data < 50MB<br>
+☐ Pas de timeout sur les requêtes<br>
+☐ Mobile responsive vérifié<br>
+☐ Filtres par défaut restrictifs<br>
+☐ Monitoring usage activé
+</div>
+</div>
+</div>
+
+<!-- Slide 12: Partage et Permissions -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Partage & Gouvernance</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+Le bon dashboard, aux bonnes personnes, au bon moment
+</div>
+
+<div class="highlight-box">
+<h3>🔐 Stratégie de Partage</h3>
+<div class="content-text" style="margin-bottom: 20px;">
+<strong>Niveau 1: View Only</strong><br>
+• C-Level, stakeholders externes<br>
+• Accès via lien, pas d'edit<br>
+• Données sensibles masquées
+</div>
+<div class="content-text" style="margin-bottom: 20px;">
+<strong>Niveau 2: Interactive</strong><br>
+• Managers, analystes<br>
+• Filtres et drill-down actifs<br>
+• Export data autorisé
+</div>
+<div class="content-text">
+<strong>Niveau 3: Edit Access</strong><br>
+• Data team only<br>
+• Modification structure<br>
+• Gestion sources de données
+</div>
+</div>
+
+<div class="tips-container" style="margin-top: 25px;">
+<div class="tip-box">
+<div class="tip-title">📧 Email Scheduling</div>
+<div class="content-text">
+• Daily pour opérationnel (8h)<br>
+• Weekly pour tactique (lundi 9h)<br>
+• Monthly pour stratégique (1er du mois)
+</div>
+</div>
+<div class="tip-box">
+<div class="tip-title">📱 Format Export</div>
+<div class="content-text">
+• PDF pour exec (visuel)<br>
+• CSV pour analysts (data)<br>
+• Link pour interactif
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 13: Maintenance et Évolution -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">Maintenance & Évolution</div>
+<div class="intro-text" style="text-align: center;">
+Un dashboard n'est jamais "fini"
+</div>
+
+<div style="background: white; border: 2px solid #3b82f6; border-radius: 12px; padding: 30px; margin-bottom: 25px;">
+<h3 style="color: #1e3a8a; font-size: 20px; margin-bottom: 20px;">📅 Planning de Maintenance</h3>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Quotidien</strong><br>
+☐ Vérifier les erreurs de données<br>
+☐ Monitoring temps de chargement
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Hebdomadaire</strong><br>
+☐ Review usage analytics<br>
+☐ Check feedback utilisateurs
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Mensuel</strong><br>
+☐ Optimisation requêtes lentes<br>
+☐ Mise à jour documentation
+</div>
+<div class="content-text">
+<strong>Trimestriel</strong><br>
+☐ Review pertinence KPIs<br>
+☐ Refactoring si nécessaire
+</div>
+</div>
+
+<div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 12px; padding: 25px;">
+<h3 style="color: #d97706; font-size: 20px; margin-bottom: 15px;">🔄 Signaux de Refonte Nécessaire</h3>
+<div class="content-text">
+• Usage < 10% des utilisateurs cibles<br>
+• Temps de chargement > 10 secondes<br>
+• > 50% des métriques non utilisées<br>
+• Business model a changé<br>
+• Nouvelle source de données disponible
+</div>
+</div>
+</div>
+
+<!-- Slide 14: Template Prêt à l'Emploi -->
+<div class="slide slide-dark">
+<div class="logo">CK LABS</div>
+<div class="title">Votre Template de Démarrage</div>
+<div class="content-text" style="text-align: center; font-size: 20px; margin-bottom: 30px;">
+<strong>Copy-paste et personnalisez !</strong>
+</div>
+
+<div style="background: #1a1a2e; border-radius: 12px; padding: 25px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8; color: #e0e0e0; overflow-x: auto;">
+<div style="color: #ff6b6b;">-- TEMPLATE SQL POUR LOOKER STUDIO</div>
+<div style="color: #ff6b6b;">-- Dashboard: [NOM]</div>
+<div style="color: #ff6b6b;">-- Créé: [DATE]</div>
+<div style="color: #ff6b6b;">-- Auteur: [VOUS]</div>
+<br>
+<div style="color: #4ecdc4;">WITH base_metrics AS (</div>
+<div style="padding-left: 20px;">
+  <span style="color: #ff6b6b;">SELECT</span><br>
+    DATE(timestamp) as date,<br>
+    <span style="color: #6c757d;">-- Dimensions</span><br>
+    category,<br>
+    region,<br>
+    <span style="color: #6c757d;">-- Métriques</span><br>
+    COUNT(DISTINCT user_id) as users,<br>
+    SUM(revenue) as revenue,<br>
+    COUNT(order_id) as orders<br>
+  <span style="color: #ff6b6b;">FROM</span> `project.dataset.table`<br>
+  <span style="color: #ff6b6b;">WHERE</span> DATE(timestamp) <br>
+    BETWEEN @DS_START_DATE AND @DS_END_DATE<br>
+  <span style="color: #ff6b6b;">GROUP BY</span> 1,2,3
+</div>
+<div style="color: #4ecdc4;">)</div>
+<br>
+<div style="color: #ff6b6b;">SELECT</div>
+<div style="padding-left: 20px;">
+  *,<br>
+  <span style="color: #6c757d;">-- Calculated metrics</span><br>
+  revenue / NULLIF(orders, 0) as avg_order_value,<br>
+  orders / NULLIF(users, 0) as orders_per_user<br>
+</div>
+<div style="color: #ff6b6b;">FROM</div> base_metrics<br>
+<div style="color: #ff6b6b;">ORDER BY</div> date DESC
+</div>
+
+<div class="content-text" style="margin-top: 25px; text-align: center; background: rgba(251, 191, 36, 0.15); padding: 20px; border-radius: 12px;">
+<strong>Next Step:</strong> Copiez ce template, adaptez à vos données, connectez dans Looker Studio !
+</div>
+</div>
+
+<!-- Slide 16: Récap Final -->
+<div class="slide slide-light">
+<div class="logo">CK LABS</div>
+<div class="title">RECAP Module 3</div>
+<div style="max-width: 800px; margin: 0 auto;">
+<div class="content-text" style="margin-bottom: 15px;">
+<strong>Dashboard = Story visuelle + Outil de découverte</strong>
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>3 niveaux</strong> : Opérationnel, Tactique, Stratégique
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Structure 5-7-9</strong> : 5 KPIs, 7 graphs max, 9 sec pour comprendre
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Granularité</strong> : Se trouve en testant, pas en théorisant
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Pré-calc vs À la volée</strong> : Ratios toujours dans Looker
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Itération perpétuelle</strong> : SQL ↔ Dashboard jusqu'au sweet spot
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Business first</strong> : Solutions de contournement > Perfection technique
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Design minimaliste</strong> : 5 couleurs max, 30% espace blanc
+</div>
+<div class="content-text" style="margin-bottom: 15px;">
+• <strong>Performance</strong> : < 3 sec ou dashboard abandonné
+</div>
+<div class="content-text">
+• <strong>Objectif ultime</strong> : Voir les trends et signaux faibles partout
+</div>
+
+<div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 12px; padding: 25px; margin-top: 30px; text-align: center;">
+<div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 10px;">
+🚀 Remember
+</div>
+<div style="font-size: 16px; color: white;">
+La beauté de la data : On découvre en construisant.<br>
+Embrassez l'itération, elle fait partie du process !
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="navigation">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<div class="dots" id="dotsContainer"></div>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const dotsContainer = document.getElementById('dotsContainer');
+
+for (let i = 0; i < totalSlides; i++) {
+const dot = document.createElement('div');
+dot.className = 'dot';
+if (i === 0) dot.classList.add('active');
+dot.addEventListener('click', () => goToSlide(i));
+dotsContainer.appendChild(dot);
+}
+
+const dots = document.querySelectorAll('.dot');
+
+function updateSlide() {
+slides.forEach((slide, index) => {
+slide.classList.toggle('active', index === currentSlide);
+});
+dots.forEach((dot, index) => {
+dot.classList.toggle('active', index === currentSlide);
+});
+prevBtn.disabled = currentSlide === 0;
+nextBtn.disabled = currentSlide === totalSlides - 1;
+}
+
+function goToSlide(index) {
+currentSlide = index;
+updateSlide();
+}
+
+prevBtn.addEventListener('click', () => {
+if (currentSlide > 0) {
+currentSlide--;
+updateSlide();
+}
+});
+
+nextBtn.addEventListener('click', () => {
+if (currentSlide < totalSlides - 1) {
+currentSlide++;
+updateSlide();
+}
+});
+
+document.addEventListener('keydown', (e) => {
+if (e.key === 'ArrowLeft') prevBtn.click();
+if (e.key === 'ArrowRight') nextBtn.click();
+});
+</script>
+</body>
+</html>
