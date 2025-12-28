@@ -3,36 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Où pointe votre boussole Data ? - CK Labs</title>
+  <title>Choisir votre formation CK Labs</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-      padding: 20px;
-      min-height: 100vh;
+      background: transparent;
+      padding: 0;
+      overflow-x: hidden;
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 40px 20px 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      align-items: start;
+      gap: 60px;
+      align-items: stretch;
     }
 
-    /* Left column - Quadran */
-    .quadran-section {
+    /* Cartes gauche/droite alignées */
+    .quadran-section,
+    .info-section {
       background: white;
       border-radius: 20px;
       padding: 40px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .quadran-header {
@@ -49,9 +50,9 @@
     .quadran-header p {
       color: #666;
       font-size: 16px;
+      line-height: 1.5;
     }
 
-    /* Quadran canvas */
     .quadran-wrapper {
       position: relative;
       width: 100%;
@@ -70,7 +71,6 @@
       display: block;
     }
 
-    /* Controls */
     .controls {
       display: flex;
       gap: 15px;
@@ -89,14 +89,8 @@
       transition: all 0.2s ease;
     }
 
-    .btn-reset {
-      background: #f0f0f0;
-      color: #666;
-    }
-
-    .btn-reset:hover {
-      background: #e0e0e0;
-    }
+    .btn-reset { background: #f0f0f0; color: #666; }
+    .btn-reset:hover { background: #e0e0e0; }
 
     .btn-validate {
       background: #1d3759;
@@ -116,18 +110,16 @@
       font-weight: 600;
     }
 
-    /* Right column - Info */
-    .info-section {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    /* Colonne de droite structurée */
+    .info-section-blocks {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
     .info-section h2 {
       color: #1d3759;
       font-size: 24px;
-      margin-bottom: 20px;
       font-weight: 700;
     }
 
@@ -135,16 +127,14 @@
       color: #666;
       font-size: 16px;
       line-height: 1.6;
-      margin-bottom: 15px;
     }
 
-    .info-section strong {
-      color: #1d3759;
-    }
+    .info-section strong { color: #1d3759; }
 
     .info-section ul {
       list-style: none;
-      margin: 20px 0;
+      margin: 10px 0 0;
+      padding: 0;
     }
 
     .info-section li {
@@ -153,57 +143,32 @@
       line-height: 1.8;
       padding-left: 25px;
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
-    .info-section li:before {
+    .info-section li::before {
       content: "•";
       color: #1d3759;
       font-weight: bold;
       font-size: 20px;
       position: absolute;
       left: 0;
+      top: 0;
     }
 
-    .test-cta {
-      margin-top: 30px;
-      padding-top: 30px;
-      border-top: 2px solid #f0f0f0;
+    .info-section-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+      font-size: 14px;
+      color: #888;
     }
 
-    .test-cta h3 {
-      color: #1d3759;
-      font-size: 20px;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    .btn-test {
-      display: inline-block;
-      background: linear-gradient(135deg, #1d3759 0%, #4a90e2 100%);
-      color: white;
-      padding: 16px 32px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(29,55,89,0.3);
-    }
-
-    .btn-test:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(29,55,89,0.4);
-    }
-
-    /* Result modal */
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.7);
       z-index: 1000;
       align-items: center;
@@ -211,9 +176,7 @@
       padding: 20px;
     }
 
-    .modal.active {
-      display: flex;
-    }
+    .modal.active { display: flex; }
 
     .modal-content {
       background: white;
@@ -227,14 +190,8 @@
     }
 
     @keyframes modalSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .modal-content h2 {
@@ -255,17 +212,17 @@
       letter-spacing: 1px;
     }
 
-    .badge-bronze {
-      background: linear-gradient(135deg, #CD7F32 0%, #E8A87C 100%);
+    .badge-f0 {
+      background: linear-gradient(135deg, #E0ECFF 0%, #B2C9FF 100%);
+      color: #1d3759;
+    }
+
+    .badge-f1 {
+      background: linear-gradient(135deg, #4a90e2 0%, #6bb6ff 100%);
       color: white;
     }
 
-    .badge-silver {
-      background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%);
-      color: #333;
-    }
-
-    .badge-gold {
+    .badge-f2 {
       background: linear-gradient(135deg, #FFD700 0%, #FFF4A3 100%);
       color: #333;
     }
@@ -277,16 +234,20 @@
       margin-bottom: 30px;
     }
 
-    .btn-formation {
+    .btn-formation,
+    .btn-close {
       display: inline-block;
-      background: #1d3759;
-      color: white;
       padding: 16px 40px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 600;
       font-size: 18px;
       transition: all 0.2s ease;
+    }
+
+    .btn-formation {
+      background: #1d3759;
+      color: white;
       margin-right: 15px;
       box-shadow: 0 4px 12px rgba(29,55,89,0.3);
     }
@@ -298,65 +259,42 @@
     }
 
     .btn-close {
-      display: inline-block;
       background: #f0f0f0;
       color: #666;
-      padding: 16px 40px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 18px;
-      cursor: pointer;
-      transition: all 0.2s ease;
       border: none;
+      cursor: pointer;
     }
 
-    .btn-close:hover {
-      background: #e0e0e0;
-    }
+    .btn-close:hover { background: #e0e0e0; }
 
-    /* Responsive */
     @media (max-width: 1024px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+      .container { grid-template-columns: 1fr; gap: 30px; }
     }
 
     @media (max-width: 768px) {
+      .container { padding: 20px 15px 15px; }
       .quadran-section,
-      .info-section {
-        padding: 25px;
-      }
-
-      .quadran-header h1 {
-        font-size: 24px;
-      }
-
-      .modal-content {
-        padding: 30px 25px;
-      }
-
-      .modal-content h2 {
-        font-size: 24px;
-      }
-
+      .info-section { padding: 25px; }
+      .quadran-header h1 { font-size: 24px; }
+      .modal-content { padding: 30px 25px; }
+      .modal-content h2 { font-size: 24px; }
       .btn-formation,
-      .btn-close {
-        display: block;
-        margin: 10px 0;
-      }
+      .btn-close { display: block; margin: 10px 0; }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    
-    <!-- Left: Quadran -->
+    <!-- Gauche : cadran -->
     <div class="quadran-section">
       <div class="quadran-header">
-        <h1>Où pointe votre boussole Data ?</h1>
-        <p>Placez-vous sur les deux axes selon vos compétences et aspirations.</p>
+        <h1>En 1 minute, trouvez la bonne formation CK Labs</h1>
+        <p>
+          Placez-vous dans le cadran selon votre niveau en data et votre objectif de carrière. 
+          On vous oriente ensuite vers <strong>Free Sunday (F0)</strong>, <strong>KickStarter (F1)</strong> 
+          ou <strong>JetPack (F2)</strong> comme prochaine étape logique.
+        </p>
       </div>
 
       <div class="quadran-wrapper">
@@ -370,173 +308,179 @@
       </div>
     </div>
 
-    <!-- Right: Info -->
+    <!-- Droite : explications parcours -->
     <div class="info-section">
-      <h2>Pourquoi viser la double compétence Data & Business ?</h2>
-      
-      <p>La double casquette vous rend <strong>indispensable</strong> : vous reliez vision et chiffres, décidez avec des preuves et automatisez le répétitif.</p>
-      
-      <p>Résultat : plus d'impact, des arbitrages clairs et un <strong>ROI visible</strong>, que vous visiez le management ou le freelance premium.</p>
+      <div class="info-section-blocks">
+        <h2>Free Sunday → KickStarter → JetPack : votre progression</h2>
 
-      <ul>
-        <li><strong>Décisions chiffrées</strong> qui alignent stratégie et exécution.</li>
-        <li><strong>Automatisation</strong> → moins d'opérationnel, plus de valeur.</li>
-        <li><strong>Crédibilité</strong> auprès de la direction ou des clients.</li>
-      </ul>
+        <p>
+          CK Labs est pensé comme un <strong>parcours</strong> et pas comme un catalogue de cours.
+          L’idée : vous faire passer d’un Excel manuel à un profil <strong>Data × Business</strong> solide,
+          clair pour la direction et difficile à remplacer.
+        </p>
 
-      <div class="test-cta">
-        <h3>Vous êtes perdus ?</h3>
-        <p>Faites notre <strong>test (10 questions)</strong> pour une <strong>recommandation plus précise</strong>.</p>
-        <a href="https://christopherklein-cmyk.github.io/cklabs_exercices/quiz.html" 
-           class="btn-test" 
-           target="_blank"
-           rel="noopener">
-          Passer le test 10 questions
-        </a>
+        <p><strong>Comment lire le cadran ?</strong></p>
+        <ul>
+          <li>
+            <strong>Vertical :</strong> en haut, vous cherchez surtout à 
+            <strong>évoluer en entreprise</strong> (promo, nouveau poste).  
+            En bas, vous vous projetez davantage vers <strong>l’indépendance</strong> 
+            (freelance, side business, consulting).
+          </li>
+          <li>
+            <strong>Horizontal :</strong> à gauche, vos <strong>skills data</strong> 
+            sont encore en construction. À droite, vous avez déjà une base technique
+            et vous voulez la muscler.
+          </li>
+          <li>
+            Plus vous descendez vers la droite, plus vous visez un profil 
+            <strong>Data × Business “arme lourde”</strong> capable d’attaquer SQL
+            et des dashboards avancés.
+          </li>
+        </ul>
+
+        <p><strong>Votre trajectoire type :</strong></p>
+        <ul>
+          <li>
+            <strong>F0 – Free Sunday :</strong> poser les bases, comprendre le 
+            <strong>piège Excel</strong>, automatiser un premier reporting et tester la pédagogie
+            sans pression.
+          </li>
+          <li>
+            <strong>F1 – KickStarter :</strong> vous faites déjà des reportings Excel et vous voulez
+            un système simple qui se met à jour tout seul avec Looker Studio.  
+            Objectif : <strong>gagner 2 à 4h par semaine</strong> et arrêter de bricoler.
+          </li>
+          <li>
+            <strong>F2 – JetPack :</strong> vous gérez déjà beaucoup de chiffres (P&amp;L, performance, marketing…)
+            et vous voulez structurer toute votre perf avec <strong>SQL + dashboards avancés</strong> pour devenir
+            vraiment autonome sur vos données.
+          </li>
+        </ul>
+
+        <p>
+          À chaque étape, vous ne gagnez pas seulement du temps : vous construisez un 
+          <strong>mindset analytique robuste, industrialisable et imbattable</strong> pour la suite de votre carrière.
+        </p>
+      </div>
+
+      <div class="info-section-footer">
+        Tip : si vous hésitez entre deux cadrans, commencez par la formation la plus simple.  
+        Un système qui tourne vaut mieux qu’un “setup parfait” jamais terminé.
       </div>
     </div>
-
   </div>
 
-  <!-- Result Modal -->
+  <!-- Modal résultat -->
   <div class="modal" id="resultModal">
     <div class="modal-content">
-      <h2>Votre formation idéale</h2>
+      <h2>Votre prochaine étape recommandée</h2>
       <div id="modalBadge"></div>
       <p id="modalDescription"></p>
-      <a href="#" id="modalLink" class="btn-formation" target="_blank" rel="noopener">Découvrir la formation</a>
+      <a href="#" id="modalLink" class="btn-formation" target="_blank" rel="noopener">
+        Découvrir la formation
+      </a>
       <button class="btn-close" onclick="closeModal()">Fermer</button>
     </div>
   </div>
 
   <script>
-    // ============================================
-    // CONFIGURATION - Facile à modifier
-    // ============================================
+    // CONFIG F0 / F1 / F2 + UTM
     const FORMATIONS = {
-      bronze: {
-        name: "Kickstart",
-        badge: "Bronze",
-        description: "Parfait pour démarrer ! Apprenez à automatiser vos reportings Excel et créer vos premiers dashboards. Aucune expérience data nécessaire.",
-        url: "https://cklabs.learnworlds.com/course/lookerstudio",
-        color: "#CD7F32"
+      f0: {
+        name: "Free Sunday",
+        badgeClass: "badge-f0",
+        label: "F0 – Free Sunday",
+        description:
+          "Vous démarrez ou voulez tester la pédagogie CK Labs. Commencez par automatiser un premier reporting et comprendre pourquoi Excel devient un piège.",
+        url: "https://www.cklabs.io/course/automatiser-sa-scorecard?utm_source=cklabs&utm_medium=quadran&utm_campaign=choisir_formation&utm_content=f0_free_sunday"
       },
-      silver: {
-        name: "360",
-        badge: "Silver",
-        description: "Vous avez des bases solides. Cette formation intermédiaire vous apprend SQL et analyse avancée pour devenir vraiment autonome.",
-        url: "https://cklabs.learnworlds.com", // À modifier
-        color: "#C0C0C0"
+      f1: {
+        name: "KickStarter",
+        badgeClass: "badge-f1",
+        label: "F1 – KickStarter",
+        description:
+          "Vous faites déjà des reportings Excel. KickStarter vous aide à passer sur Looker Studio avec un système 100 % automatisé et un vrai socle analytique.",
+        url: "https://www.cklabs.io/course/lookerstudio?utm_source=cklabs&utm_medium=quadran&utm_campaign=choisir_formation&utm_content=f1_kickstarter"
       },
-      gold: {
-        name: "Advanced",
-        badge: "Gold",
-        description: "Vous maîtrisez déjà les outils. Passez au niveau supérieur avec analyses à fort impact business et pensée data-driven avancée.",
-        url: "https://cklabs.learnworlds.com", // À modifier
-        color: "#FFD700"
+      f2: {
+        name: "JetPack",
+        badgeClass: "badge-f2",
+        label: "F2 – JetPack",
+        description:
+          "Vous gérez déjà beaucoup de chiffres. JetPack vous donne SQL + dashboards avancés pour structurer toute la chaîne de performance.",
+        url: "https://www.cklabs.io/course/data-jetpack?utm_source=cklabs&utm_medium=quadran&utm_campaign=choisir_formation&utm_content=f2_jetpack"
       }
     };
 
     const COLORS = {
-      ck_blue: '#1d3759',
-      bronze: '#CD7F32',
-      silver: '#C0C0C0',
-      gold: '#FFD700'
+      ck_blue: "#1d3759",
+      f0: "#E0ECFF",
+      f1: "#4a90e2",
+      f2: "#FFD700"
     };
 
-    // ============================================
-    // CANVAS SETUP
-    // ============================================
-    const canvas = document.getElementById('quadranCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    let cursorPos = { x: 0.5, y: 0.5 }; // Position relative (0-1)
+    const canvas = document.getElementById("quadranCanvas");
+    const ctx = canvas.getContext("2d");
+    let cursorPos = { x: 0.5, y: 0.5 };
     let isDragging = false;
 
     function setupCanvas() {
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.width  = rect.width * window.devicePixelRatio;
       canvas.height = rect.height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
       drawQuadran();
-    }
-
-    // ============================================
-    // GRADIENT CALCULATION
-    // ============================================
-    function getGradientColor(x, y) {
-      // x: 0 (left/débutant) → 1 (right/expert)
-      // y: 0 (bottom/indépendant) → 1 (top/corporate)
-      
-      // Determine dominant formation based on position
-      let targetColor;
-      
-      if (x < 0.4) {
-        // Débutant zone → Bronze
-        targetColor = COLORS.bronze;
-      } else if (x < 0.7) {
-        // Intermédiaire zone → Blue (instead of silver)
-        targetColor = '#4a90e2'; // Lighter CK blue
-      } else {
-        // Expert zone → Gold
-        targetColor = COLORS.gold;
-      }
-
-      // Mix with CK blue based on Y position
-      const ckBlue = hexToRgb(COLORS.ck_blue);
-      const target = hexToRgb(targetColor);
-      
-      // More blue at top (corporate), more target color at bottom
-      const blueRatio = y * 0.5; // Max 50% blue for better blend
-      
-      const r = Math.round(ckBlue.r * blueRatio + target.r * (1 - blueRatio));
-      const g = Math.round(ckBlue.g * blueRatio + target.g * (1 - blueRatio));
-      const b = Math.round(ckBlue.b * blueRatio + target.b * (1 - blueRatio));
-      
-      return `rgb(${r}, ${g}, ${b})`;
     }
 
     function hexToRgb(hex) {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-      } : null;
+      return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+          }
+        : null;
     }
 
-    // ============================================
-    // DRAWING
-    // ============================================
+    function getGradientColor(x, y) {
+      let targetColor;
+      if (x < 0.33)      targetColor = COLORS.f0;
+      else if (x < 0.66) targetColor = COLORS.f1;
+      else               targetColor = COLORS.f2;
+
+      const ckBlue  = hexToRgb(COLORS.ck_blue);
+      const target  = hexToRgb(targetColor);
+      const blueRatio = y * 0.5;
+
+      const r = Math.round(ckBlue.r * blueRatio + target.r * (1 - blueRatio));
+      const g = Math.round(ckBlue.g * blueRatio + target.g * (1 - blueRatio));
+      const b = Math.round(ckBlue.b * blueRatio + target.b * (1 - blueRatio));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
     function drawQuadran() {
-      const w = canvas.getBoundingClientRect().width;
-      const h = canvas.getBoundingClientRect().height;
-      
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+
       ctx.clearRect(0, 0, w, h);
 
-      // Background gradient based on cursor position
       const gradient = ctx.createRadialGradient(
         cursorPos.x * w, cursorPos.y * h, 0,
         cursorPos.x * w, cursorPos.y * h, w * 0.8
       );
-      
       const centerColor = getGradientColor(cursorPos.x, cursorPos.y);
       gradient.addColorStop(0, centerColor);
-      gradient.addColorStop(1, '#f5f7fa');
-      
+      gradient.addColorStop(1, "#f5f7fa");
+
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, w, h);
 
-      // Draw CK logo in background
       drawCKLogo(w, h);
-
-      // Draw axes
       drawAxes(w, h);
-
-      // Draw labels
       drawLabels(w, h);
-
-      // Draw cursor
       drawCursor(w, h);
     }
 
@@ -545,23 +489,21 @@
       ctx.globalAlpha = 0.05;
       ctx.font = `bold ${w * 0.4}px Arial`;
       ctx.fillStyle = COLORS.ck_blue;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('CK', w / 2, h / 2);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("CK", w / 2, h / 2);
       ctx.restore();
     }
 
     function drawAxes(w, h) {
-      ctx.strokeStyle = '#d0d0d0';
+      ctx.strokeStyle = "#d0d0d0";
       ctx.lineWidth = 2;
-      
-      // Vertical axis
+
       ctx.beginPath();
       ctx.moveTo(w / 2, 0);
       ctx.lineTo(w / 2, h);
       ctx.stroke();
-      
-      // Horizontal axis
+
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
       ctx.lineTo(w, h / 2);
@@ -570,71 +512,48 @@
 
     function drawLabels(w, h) {
       ctx.fillStyle = COLORS.ck_blue;
-      ctx.font = 'bold 14px sans-serif';
-      ctx.textAlign = 'center';
-      
-      // Top: Évoluer en entreprise
-      ctx.fillText('Évoluer en entreprise', w / 2, 20);
-      
-      // Bottom: Devenir indépendant
-      ctx.fillText('Devenir indépendant', w / 2, h - 10);
-      
-      // Left: Débutant
+      ctx.font = "bold 14px sans-serif";
+      ctx.textAlign = "center";
+
+      ctx.fillText("Évoluer en entreprise", w / 2, 20);
+      ctx.fillText("Devenir indépendant",   w / 2, h - 10);
+
       ctx.save();
       ctx.translate(15, h / 2);
       ctx.rotate(-Math.PI / 2);
-      ctx.textAlign = 'center';
-      ctx.fillText('Débutant', 0, 0);
+      ctx.fillText("Débutant", 0, 0);
       ctx.restore();
-      
-      // Right: Expert
+
       ctx.save();
       ctx.translate(w - 15, h / 2);
       ctx.rotate(Math.PI / 2);
-      ctx.textAlign = 'center';
-      ctx.fillText('Expert', 0, 0);
+      ctx.fillText("Expert", 0, 0);
       ctx.restore();
 
-      // Center label
-      ctx.font = '12px sans-serif';
-      ctx.fillStyle = '#999';
-      ctx.fillText('Skills data / analytics', w / 2, h / 2 - 10);
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "#999";
+      ctx.fillText("Skills data / analytics", w / 2, h / 2 - 10);
     }
 
     function drawCursor(w, h) {
       const x = cursorPos.x * w;
       const y = cursorPos.y * h;
-      
-      // Outer circle
+
       ctx.beginPath();
       ctx.arc(x, y, 12, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.ck_blue;
       ctx.fill();
-      
-      // Inner circle
+
       ctx.beginPath();
       ctx.arc(x, y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = "white";
       ctx.fill();
-      
-      // Center dot
+
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.ck_blue;
       ctx.fill();
     }
-
-    // ============================================
-    // INTERACTIONS
-    // ============================================
-    canvas.addEventListener('mousedown', startDrag);
-    canvas.addEventListener('mousemove', drag);
-    canvas.addEventListener('mouseup', endDrag);
-    canvas.addEventListener('mouseleave', endDrag);
-    
-    canvas.addEventListener('touchstart', startDrag);
-    canvas.addEventListener('touchmove', drag);
-    canvas.addEventListener('touchend', endDrag);
 
     function startDrag(e) {
       isDragging = true;
@@ -655,18 +574,19 @@
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      
+
       cursorPos.x = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
       cursorPos.y = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
-      
+
       drawQuadran();
       updateCoordinates();
     }
 
     function updateCoordinates() {
       const xPercent = Math.round(cursorPos.x * 100);
-      const yPercent = Math.round((1 - cursorPos.y) * 100); // Invert Y for display
-      document.getElementById('coordinates').textContent = `X: ${xPercent}% • Y: ${yPercent}%`;
+      const yPercent = Math.round((1 - cursorPos.y) * 100);
+      document.getElementById("coordinates").textContent =
+        `X: ${xPercent}% • Y: ${yPercent}%`;
     }
 
     function resetCursor() {
@@ -675,61 +595,54 @@
       updateCoordinates();
     }
 
-    // ============================================
-    // VALIDATION & RECOMMENDATION
-    // ============================================
     function validatePosition() {
       const x = cursorPos.x;
-      const y = cursorPos.y;
-      
       let formation;
-      
-      if (x < 0.4) {
-        formation = FORMATIONS.bronze;
-      } else if (x < 0.7) {
-        formation = FORMATIONS.silver;
-      } else {
-        formation = FORMATIONS.gold;
-      }
-      
+      if (x < 0.33)      formation = FORMATIONS.f0;
+      else if (x < 0.66) formation = FORMATIONS.f1;
+      else               formation = FORMATIONS.f2;
       showResult(formation);
     }
 
     function showResult(formation) {
-      const modal = document.getElementById('resultModal');
-      const badge = document.getElementById('modalBadge');
-      const description = document.getElementById('modalDescription');
-      const link = document.getElementById('modalLink');
-      
-      badge.innerHTML = `<div class="formation-badge badge-${formation.badge.toLowerCase()}">${formation.badge} - ${formation.name}</div>`;
+      const modal       = document.getElementById("resultModal");
+      const badge       = document.getElementById("modalBadge");
+      const description = document.getElementById("modalDescription");
+      const link        = document.getElementById("modalLink");
+
+      badge.innerHTML =
+        `<div class="formation-badge ${formation.badgeClass}">${formation.label}</div>`;
       description.textContent = formation.description;
       link.href = formation.url;
-      
-      modal.classList.add('active');
+
+      modal.classList.add("active");
     }
 
     function closeModal() {
-      document.getElementById('resultModal').classList.remove('active');
+      document.getElementById("resultModal").classList.remove("active");
     }
 
-    // Close modal on background click
-    document.getElementById('resultModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeModal();
-      }
+    document.getElementById("resultModal").addEventListener("click", function(e) {
+      if (e.target === this) closeModal();
     });
 
-    // ============================================
-    // INIT
-    // ============================================
-    window.addEventListener('load', () => {
+    window.addEventListener("load", () => {
       setupCanvas();
       updateCoordinates();
     });
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       setupCanvas();
     });
+
+    canvas.addEventListener("mousedown", startDrag);
+    canvas.addEventListener("mousemove", drag);
+    canvas.addEventListener("mouseup", endDrag);
+    canvas.addEventListener("mouseleave", endDrag);
+
+    canvas.addEventListener("touchstart", startDrag, { passive: false });
+    canvas.addEventListener("touchmove",  drag,      { passive: false });
+    canvas.addEventListener("touchend",   endDrag);
   </script>
 
 </body>
