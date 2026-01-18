@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F2 BigQuery → Looker Studio - Workflow Avancé</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.4em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.15em;
+            opacity: 0.95;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #fbbf24;
+            color: #1e1b4b;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .section {
+            margin-bottom: 45px;
+        }
+        
+        .section h2 {
+            color: #1e1b4b;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-left: 5px solid #fbbf24;
+            padding-left: 18px;
+        }
+        
+        .use-case {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .use-case h3 {
+            color: #3730a3;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .use-case p {
+            margin-bottom: 12px;
+            color: #475569;
+        }
+        
+        .use-case ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .use-case li {
+            margin-bottom: 10px;
+            color: #475569;
+        }
+        
+        .use-case strong {
+            color: #1e1b4b;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #fbbf24;
+            line-height: 1.6;
+        }
+        
+        .code-block .comment {
+            color: #94a3b8;
+        }
+        
+        .code-block .keyword {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+        
+        .code-block .function {
+            color: #34d399;
+        }
+        
+        .code-block .string {
+            color: #fbbf24;
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-box p {
+            color: #78350f;
+            line-height: 1.6;
+        }
+        
+        .tip-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .tip-box h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tip-box p {
+            color: #1e3a8a;
+            line-height: 1.6;
+        }
+        
+        .workflow-steps {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .workflow-step {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-step:hover {
+            border-color: #3730a3;
+            box-shadow: 0 4px 12px rgba(55, 48, 163, 0.1);
+        }
+        
+        .workflow-step .step-number {
+            background: #3730a3;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .workflow-step .step-content h4 {
+            color: #1e1b4b;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .workflow-step .step-content p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .qcm-question {
+            background: #f8fafc;
+            border-left: 4px solid #3730a3;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .question-number {
+            color: #1e1b4b;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .question-text {
+            color: #1e1b4b;
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 5px;
+            cursor: pointer;
+            accent-color: #3730a3;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            padding: 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: white;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .option input[type="radio"]:checked + label {
+            background: #e0e7ff;
+            border-color: #3730a3;
+            font-weight: 600;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #3730a3 0%, #1e1b4b 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 27, 75, 0.3);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 18px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #047857;
+        }
+        
+        .feedback.incorrect {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        
+        .feedback-text {
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+        
+        .score-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .score-section.show {
+            display: block;
+        }
+        
+        .score-section h3 {
+            color: #047857;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .score-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: #10b981;
+            margin: 15px 0;
+        }
+        
+        .score-message {
+            color: #065f46;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        footer {
+            background: #f8fafc;
+            padding: 25px 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .table-info {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .table-info .table-path {
+            color: #3730a3;
+            font-weight: 600;
+        }
+        
+        .table-info .table-size {
+            color: #dc2626;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔷 Formation F2 - BigQuery → Looker Studio</h1>
+            <p>Workflow complet : Exploration → Query → Optimisation → Dashboard</p>
+            <div class="badge">Niveau Avancé</div>
+        </header>
+        
+        <div class="content">
+            <!-- RESOURCES SECTION -->
+            <div class="section">
+                <h2>📚 Ressources Essentielles</h2>
+                
+                <div class="use-case">
+                    <h3>🔗 Documentation & Aide</h3>
+                    <p style="margin-bottom: 15px;">Vous allez avoir besoin de ces ressources pendant le challenge. Gardez-les ouvertes dans des onglets :</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0;">
+                        <a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; height: 100%; min-height: 180px; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="font-size: 2em; margin-bottom: 10px; text-align: center;">📘</div>
+                                <strong style="font-size: 1em; display: block; margin-bottom: 8px; text-align: center;">BigQuery SQL Docs</strong>
+                                <p style="font-size: 0.85em; opacity: 0.95; margin: 0; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center;">Référence complète des fonctions SQL</p>
+                            </div>
+                        </a>
+                        
+                        <a href="https://support.google.com/looker-studio/answer/6283323" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #ea4335 0%, #fbbc04 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; height: 100%; min-height: 180px; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="font-size: 2em; margin-bottom: 10px; text-align: center;">📊</div>
+                                <strong style="font-size: 1em; display: block; margin-bottom: 8px; text-align: center;">Looker Studio Help</strong>
+                                <p style="font-size: 0.85em; opacity: 0.95; margin: 0; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center;">Champs calculés, graphiques, filtres</p>
+                            </div>
+                        </a>
+                        
+                        <a href="https://stackoverflow.com/questions/tagged/google-bigquery" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #f48024 0%, #f48024 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; height: 100%; min-height: 180px; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="font-size: 2em; margin-bottom: 10px; text-align: center;">💬</div>
+                                <strong style="font-size: 1em; display: block; margin-bottom: 8px; text-align: center;">Stack Overflow</strong>
+                                <p style="font-size: 0.85em; opacity: 0.95; margin: 0; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center;">99% des erreurs déjà résolues</p>
+                            </div>
+                        </a>
+                        
+                        <a href="https://console.cloud.google.com/bigquery?project=bigquery-public-data&ws=!1m4!1m3!3m2!1sbigquery-public-data!2sthelook_ecommerce" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; height: 100%; min-height: 180px; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="font-size: 2em; margin-bottom: 10px; text-align: center;">🗄️</div>
+                                <strong style="font-size: 1em; display: block; margin-bottom: 8px; text-align: center;">Dataset TheLook</strong>
+                                <p style="font-size: 0.85em; opacity: 0.95; margin: 0; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center;">Accès direct au dataset public</p>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <style>
+                        @media (max-width: 900px) {
+                            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                                grid-template-columns: repeat(2, 1fr) !important;
+                            }
+                        }
+                        @media (max-width: 500px) {
+                            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                                grid-template-columns: 1fr !important;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="tip-box">
+                        <h4>💡 Comment Utiliser ces Ressources</h4>
+                        <p><strong>BigQuery Docs :</strong> Quand vous ne connaissez pas une fonction SQL (ex: comment extraire le mois d'une date ?)<br>
+                        <strong>Looker Studio Help :</strong> Quand vous ne savez pas quel graphique utiliser ou comment créer un champ calculé<br>
+                        <strong>Stack Overflow :</strong> Quand vous avez une erreur SQL bizarre. Copiez le message d'erreur dans Google + "stack overflow"<br>
+                        <strong>Dataset TheLook :</strong> Pour explorer directement les tables et tester vos queries</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BUSINESS CASE -->
+            <div class="section">
+                <h2>🎯 Votre Mission : Dashboard "Performance E-commerce"</h2>
+                
+                <div class="use-case" style="background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 100%); color: white; padding: 30px; border-radius: 10px;">
+                    <h3 style="color: #fbbf24; font-size: 1.4em; margin-bottom: 15px;">📧 Email reçu ce matin - 8h47</h3>
+                    <div style="background: white; color: #1e1b4b; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.6;">
+                        <strong>DE:</strong> Sarah Chen - CMO @ TheLook<br>
+                        <strong>À:</strong> Vous - Data Analyst<br>
+                        <strong>OBJET:</strong> 🔴 URGENT - Dashboard Performance pour Comité de Direction<br>
+                        <strong>PRIORITÉ:</strong> HAUTE<br>
+                        <hr style="margin: 15px 0; border: none; border-top: 1px solid #e2e8f0;">
+                        <p style="margin: 10px 0;">Bonjour,</p>
+                        <p style="margin: 10px 0;">J'ai présenté nos résultats Q4 au board hier. Verdict : "On ne comprend rien à vos chiffres". Ils veulent UN SEUL dashboard qui montre d'un coup d'œil :</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li>Est-ce qu'on croît vraiment ?</li>
+                            <li>Où est-ce qu'on gagne de l'argent (et où on en perd) ?</li>
+                            <li>Quels leviers actionner pour Q1 2025 ?</li>
+                        </ul>
+                        <p style="margin: 10px 0; background: #fef3c7; padding: 10px; border-left: 3px solid #f59e0b; color: #78350f;"><strong>⏰ Deadline : Jeudi 10h (présentation au CEO)</strong><br>Format : Dashboard Looker Studio interactif, max 1 page</p>
+                        <p style="margin: 10px 0;">Je compte sur toi. Toutes les données sont dans BigQuery (dataset public thelook_ecommerce).</p>
+                        <p style="margin: 10px 0;">Sarah</p>
+                    </div>
+                </div>
+                
+                <div class="use-case">
+                    <h3>📊 Spécifications du Dashboard</h3>
+                    <p style="font-size: 1.05em; color: #1e1b4b; margin-bottom: 15px;">Votre dashboard doit contenir <strong>8 composants clés</strong> qui racontent l'histoire de la performance :</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">📈</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">1. KPIs Essentiels</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">4 scorecards : CA Total, Marge Totale, Nb Commandes, Panier Moyen (avec évolution vs période précédente)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #3730a3 0%, #1e3a8a 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">📉</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">2. Évolution Panier Moyen</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Timeline chart montrant la tendance jour par jour (filtrable par catégorie/pays)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">3. Top 5 Catégories</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Table classée par marge brute (avec CA, Marge €, Taux marge %)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">🌍</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">4. Performance Géo</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Bar chart horizontal : Top pays par CA + colonne Taux marge</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">📱</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">5. Canaux d'Acquisition</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Pie chart : Répartition CA par canal (Organic, Paid, Email, etc.)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">👕</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">6. Top 10 Marques</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Bar chart : Marques les plus rentables (marge brute €)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">📆</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">7. Tendance Commandes</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Line chart mensuel : Volume commandes (identifier saisonnalité)</p>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2em; margin-bottom: 10px;">💰</div>
+                            <strong style="font-size: 1.1em; display: block; margin-bottom: 8px;">8. CA vs Marge</strong>
+                            <p style="font-size: 0.9em; opacity: 0.95;">Combo chart : 2 courbes (CA + Marge) sur la même timeline pour détecter les anomalies</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tip-box" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #1e40af;">💡 Philosophie du Dashboard (Règle d'or CK Labs)</h4>
+                    <p style="color: #1e3a8a; line-height: 1.7;">Un bon dashboard = <strong>5 secondes pour comprendre, 30 secondes pour décider.</strong><br><br>
+                    Le CEO doit pouvoir répondre à "Est-ce qu'on va bien ?" en scrollant UNE SEULE PAGE. Pas de slides, pas de rapport de 40 pages. Juste de la data visuelle qui parle d'elle-même.<br><br>
+                    <strong>Vos armes :</strong> Couleurs cohérentes, titres explicites, chiffres gros et visibles, comparaisons temporelles activées.</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h4>⚠️ Règles du Challenge</h4>
+                    <p><strong>🚫 Interdit :</strong> Copier-coller une solution toute faite. Vous devez CONSTRUIRE le dashboard.<br>
+                    <strong>✅ Autorisé :</strong> Utiliser les indices si vous bloquez (boutons 💡 fournis pour chaque composant).<br>
+                    <strong>🎯 Critères de succès :</strong><br>
+                    • Le dashboard charge en < 5 secondes<br>
+                    • Chaque graphique répond à UNE question précise<br>
+                    • Les couleurs et le layout sont professionnels<br>
+                    • Les filtres fonctionnent (catégorie, pays, date)<br>
+                    • Les comparaisons temporelles sont activées sur les KPIs</p>
+                </div>
+                
+                <div class="use-case" style="border: 2px dashed #94a3b8; background: #f8fafc; margin-top: 20px;">
+                    <h3 style="color: #64748b;">🎁 Bonus : Questions Subsidiaires (Optionnel)</h3>
+                    <p style="color: #64748b; margin-bottom: 15px;">Si vous avez le temps (et l'envie de briller), ajoutez ces analyses avancées au dashboard :</p>
+                    
+                    <details style="background: white; padding: 12px; border-radius: 6px; margin: 8px 0; cursor: pointer; border: 1px solid #e2e8f0;">
+                        <summary style="font-weight: 600; color: #475569; cursor: pointer;">📊 Analyse Pareto Clients (Top 20% clients = X% du CA ?)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #64748b;">
+                            <p>Calculer la contribution cumulative des clients au CA. Identifier si 20% des clients génèrent 80% du CA (principe de Pareto). Nécessite une window function en BigQuery.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: white; padding: 12px; border-radius: 6px; margin: 8px 0; cursor: pointer; border: 1px solid #e2e8f0;">
+                        <summary style="font-weight: 600; color: #475569; cursor: pointer;">🔍 Analyse de Cohortes (Clients par mois de 1ère commande)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #64748b;">
+                            <p>Segmenter les clients par mois de première commande et suivre leur CA dans le temps. Permet de mesurer la rétention et la lifetime value.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: white; padding: 12px; border-radius: 6px; margin: 8px 0; cursor: pointer; border: 1px solid #e2e8f0;">
+                        <summary style="font-weight: 600; color: #475569; cursor: pointer;">📈 Évolution Part de Marché par Catégorie (Stacked Area Chart)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #64748b;">
+                            <p>Voir l'évolution de la contribution (%) de chaque catégorie au CA total mois par mois. Identifier les catégories montantes vs descendantes.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: white; padding: 12px; border-radius: 6px; margin: 8px 0; cursor: pointer; border: 1px solid #e2e8f0;">
+                        <summary style="font-weight: 600; color: #475569; cursor: pointer;">🌡️ Heatmap Jour de Semaine × Heure (Quand vend-on le plus ?)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #64748b;">
+                            <p>Créer une heatmap croisant jour de la semaine (Lun-Dim) et heure de la journée (0-23h) pour identifier les pics de vente. Utile pour timing des campagnes marketing.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: white; padding: 12px; border-radius: 6px; margin: 8px 0; cursor: pointer; border: 1px solid #e2e8f0;">
+                        <summary style="font-weight: 600; color: #475569; cursor: pointer;">💎 Analyse RFM (Recency, Frequency, Monetary)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #64748b;">
+                            <p>Segmenter les clients selon : Dernière commande (Recency), Fréquence d'achat (Frequency), Montant dépensé (Monetary). Identifier les VIP vs clients à risque.</p>
+                        </div>
+                    </details>
+                    
+                    <p style="color: #94a3b8; font-size: 0.9em; margin-top: 15px; font-style: italic;">💡 Ces analyses ne sont PAS obligatoires pour valider le challenge. Mais elles impressionneront le CEO si vous les présentez.</p>
+                </div>
+            </div>
+                
+                <div class="use-case">
+                    <h3>💾 Infrastructure Data (Dataset Public Google)</h3>
+                    <div class="table-info">
+                        <div><strong>Projet GCP :</strong> <span class="table-path">bigquery-public-data</span></div>
+                        <div><strong>Dataset :</strong> <span class="table-path">thelook_ecommerce</span></div>
+                        <div><strong>📌 GRATUIT - Accessible à tous (1 TB/mois free tier)</strong></div>
+                        <div><strong>Tables disponibles :</strong></div>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><span class="table-path">order_items</span> <span class="table-size">(~500 MB, 2M+ lignes)</span> → Détail des commandes</li>
+                            <li><span class="table-path">orders</span> <span class="table-size">(~100 MB, 100K+ lignes)</span> → En-tête commandes</li>
+                            <li><span class="table-path">users</span> <span class="table-size">(~50 MB, 100K+ lignes)</span> → Clients</li>
+                            <li><span class="table-path">products</span> <span class="table-size">(~20 MB, 30K lignes)</span> → Catalogue produits</li>
+                            <li><span class="table-path">inventory_items</span> <span class="table-size">(~150 MB, 500K lignes)</span> → Stock/coûts</li>
+                        </ul>
+                        <div style="margin-top: 10px; padding: 10px; background: #e0f2fe; border-radius: 6px;">
+                            <strong>🎯 Comment accéder :</strong><br>
+                            1. Ouvrez <a href="https://console.cloud.google.com/bigquery" target="_blank" style="color: #1e3a8a;">BigQuery Console</a><br>
+                            2. Dans l'explorateur, cliquez "+ AJOUTER" → "Projets publics"<br>
+                            3. Cherchez : <code>bigquery-public-data</code><br>
+                            4. Naviguez vers <code>thelook_ecommerce</code>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h4>⚠️ Contraintes Techniques (RÉELLES)</h4>
+                        <p><strong>Free Tier BigQuery :</strong> 1 TB processé/mois GRATUIT (largement suffisant pour ce cas)<br>
+                        <strong>Au-delà :</strong> 5€ par TB supplémentaire<br>
+                        <strong>Looker Studio :</strong> Max 100K lignes par requête connectée (limite technique Google)<br>
+                        <strong>✅ Bonne pratique :</strong> Toujours vérifier "This query will process X GB" avant d'exécuter</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- WORKFLOW -->
+            <div class="section">
+                <h2>🔄 Workflow BigQuery → Looker Studio</h2>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Explorer les tables & estimer les volumes</h4>
+                            <p>Avant de requêter, utilisez la Preview pour voir le schéma. Utilisez la vue "Détails" pour vérifier la taille (GB) de chaque table. <strong>Règle d'or :</strong> Ne jamais faire de SELECT * sur une table > 1 GB sans filtre WHERE.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Écrire une première query exploratoire (avec LIMIT)</h4>
+                            <p>Requêtez un échantillon avec LIMIT 1000 pour valider la logique. Vérifiez que les jointures, filtres et agrégations fonctionnent. <strong>Astuce :</strong> BigQuery affiche "This query will process X GB" avant exécution.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Décider : Calcul en BigQuery ou Looker Studio ?</h4>
+                            <p><strong>BigQuery :</strong> Agrégations lourdes (SUM, AVG sur millions de lignes), déduplication (DISTINCT), fenêtrage (RANK, LAG).<br>
+                            <strong>Looker Studio :</strong> Ratios simples (Taux marge = Marge/CA), filtres interactifs, comparaisons de périodes.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Optimiser la query finale (partitionnement, agrégation)</h4>
+                            <p>Si la table est partitionnée par DATE, ajoutez toujours un filtre WHERE date >= '2024-01-01'. Pré-agrégez en BigQuery (GROUP BY) pour réduire les lignes envoyées à Looker Studio. <strong>Objectif :</strong> < 50K lignes en sortie de query.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Connecter la query à Looker Studio</h4>
+                            <p>Dans Looker Studio : Créer une source de données → BigQuery → "Custom Query". Collez votre SQL optimisée. <strong>Important :</strong> Activer "Enable data freshness" pour refresh automatique toutes les 12h.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Créer les champs calculés dans Looker Studio</h4>
+                            <p>Pour les ratios et métriques visuelles (Taux marge, AOV, CVR), créez des champs calculés côté Looker Studio avec SAFE_DIVIDE(). <strong>Avantage :</strong> Permet les comparaisons de périodes natives (vs période précédente, vs année N-1).</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Itérer : Aller-retour BigQuery ↔ Looker Studio</h4>
+                            <p>Si le dashboard est lent (> 10 sec de chargement), retournez dans BigQuery pour pré-agréger davantage. Si vous avez besoin d'une nouvelle dimension (ex: segment client), ajoutez-la dans la query SQL et reconnectez.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <h4>💡 Best Practice CK Labs</h4>
+                    <p><strong>Règle des 20/80 :</strong> Passez 20% du temps à écrire la query parfaite, 80% à itérer sur le dashboard visuel. Une query médiocre mais un dashboard clair vaut mieux qu'une query parfaite invisible dans BigQuery. L'impact business vient de la décision prise, pas de la beauté du SQL.</p>
+                </div>
+            </div>
+            
+            <!-- TECHNICAL DEEP DIVE -->
+            <div class="section">
+                <h2>⚙️ Challenge : De BigQuery à Looker Studio</h2>
+                
+                <div class="use-case">
+                    <h3>🎯 Votre Mission en 3 Étapes</h3>
+                    <p><strong>ÉTAPE 1 :</strong> Comprendre les données disponibles dans BigQuery<br>
+                    <strong>ÉTAPE 2 :</strong> Écrire une query optimisée qui récupère les bonnes métriques<br>
+                    <strong>ÉTAPE 3 :</strong> Créer les graphiques dans Looker Studio pour répondre aux 8 questions business</p>
+                </div>
+                
+                <div class="use-case">
+                    <h3>🔍 ÉTAPE 1 : Explorer les Données BigQuery</h3>
+                    <p>Avant de requêter, explorez le schéma pour comprendre ce qui est disponible.</p>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 1 : Comment accéder aux données publiques ?</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <p><strong>Étapes :</strong></p>
+                            <ol style="margin-left: 20px; line-height: 1.8;">
+                                <li>Ouvrez <a href="https://console.cloud.google.com/bigquery" target="_blank">BigQuery Console</a></li>
+                                <li>Dans l'explorateur (panneau gauche), cliquez "+ AJOUTER"</li>
+                                <li>Sélectionnez "Projets publics"</li>
+                                <li>Cherchez : <code>bigquery-public-data</code></li>
+                                <li>Naviguez vers le dataset <code>thelook_ecommerce</code></li>
+                            </ol>
+                        </div>
+                    </details>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 2 : Quelle query pour explorer rapidement ?</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <div class="code-block">
+<span class="comment">-- Query d'exploration rapide (processera ~50 MB)</span>
+<span class="keyword">SELECT</span> 
+  <span class="function">MIN</span>(created_at) <span class="keyword">AS</span> date_min,
+  <span class="function">MAX</span>(created_at) <span class="keyword">AS</span> date_max,
+  <span class="function">COUNT</span>(*) <span class="keyword">AS</span> nb_lignes,
+  <span class="function">COUNT</span>(<span class="keyword">DISTINCT</span> user_id) <span class="keyword">AS</span> nb_clients
+<span class="keyword">FROM</span> <span class="string">`bigquery-public-data.thelook_ecommerce.order_items`</span>
+<span class="keyword">WHERE</span> created_at >= <span class="string">'2024-01-01'</span>
+<span class="keyword">LIMIT</span> 10;
+                            </div>
+                            <p style="margin-top: 10px;"><strong>Résultat attendu :</strong> Dates dispo, volume de données, nombre de clients.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 3 : Quelles tables joindre ensemble ?</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <p><strong>Tables importantes :</strong></p>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li><code>order_items</code> : Les lignes de commandes (avec sale_price, order_id, user_id, product_id)</li>
+                                <li><code>products</code> : Catalogue (category, brand, department)</li>
+                                <li><code>users</code> : Clients (country, traffic_source, age, gender)</li>
+                                <li><code>inventory_items</code> : Coûts d'achat (cost) → pour calculer la marge</li>
+                            </ul>
+                            <p style="margin-top: 10px;"><strong>Astuce :</strong> Utilisez LEFT JOIN pour ne pas perdre de lignes si certaines infos manquent.</p>
+                        </div>
+                    </details>
+                </div>
+                
+                <div class="use-case">
+                    <h3>💻 ÉTAPE 2 : Écrire la Query Optimisée</h3>
+                    <p>Votre query doit ramener les données nécessaires pour construire le dashboard, mais <strong>PAS PLUS</strong>.</p>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 1 : Quelles métriques calculer ?</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <p><strong>Métriques essentielles à créer :</strong></p>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li><strong>CA :</strong> SUM(sale_price)</li>
+                                <li><strong>Coûts :</strong> SUM(cost) depuis inventory_items</li>
+                                <li><strong>Marge :</strong> CA - Coûts</li>
+                                <li><strong>Commandes :</strong> COUNT(DISTINCT order_id)</li>
+                                <li><strong>Clients :</strong> COUNT(DISTINCT user_id)</li>
+                            </ul>
+                            <p style="margin-top: 10px;"><strong>⚠️ Important :</strong> NE PAS calculer les ratios (panier moyen, taux marge) en SQL ! Faites-le dans Looker Studio pour garder la flexibilité.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 2 : À quelle granularité agréger ?</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <p><strong>GROUP BY recommandé :</strong></p>
+                            <ul style="margin-left: 20px; line-height: 1.8;">
+                                <li>Date (au niveau JOUR) → DATE(created_at) ou DATE_TRUNC(..., MONTH)</li>
+                                <li>Catégorie → p.category</li>
+                                <li>Marque → p.brand</li>
+                                <li>Pays → u.country</li>
+                                <li>Canal acquisition → u.traffic_source</li>
+                            </ul>
+                            <p style="margin-top: 10px;"><strong>Pourquoi au jour ?</strong> Cela permet d'agréger en semaine/mois dans Looker Studio sans retoucher au SQL.</p>
+                        </div>
+                    </details>
+                    
+                    <details style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                        <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 3 : Query complète (SOLUTION)</summary>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                            <div class="code-block">
+<span class="comment">-- 🎯 Query optimisée pour Looker Studio</span>
+<span class="keyword">SELECT</span>
+  <span class="function">DATE</span>(oi.created_at) <span class="keyword">AS</span> date_commande,
+  p.category <span class="keyword">AS</span> categorie,
+  p.brand <span class="keyword">AS</span> marque,
+  u.country <span class="keyword">AS</span> pays,
+  u.traffic_source <span class="keyword">AS</span> canal,
+  
+  <span class="comment">-- Métriques brutes (ratios calculés dans Looker Studio)</span>
+  <span class="function">COUNT</span>(<span class="keyword">DISTINCT</span> oi.order_id) <span class="keyword">AS</span> commandes,
+  <span class="function">COUNT</span>(<span class="keyword">DISTINCT</span> oi.user_id) <span class="keyword">AS</span> clients,
+  <span class="function">SUM</span>(oi.sale_price) <span class="keyword">AS</span> ca,
+  <span class="function">SUM</span>(ii.cost) <span class="keyword">AS</span> couts,
+  <span class="function">SUM</span>(oi.sale_price - ii.cost) <span class="keyword">AS</span> marge
+  
+<span class="keyword">FROM</span> <span class="string">`bigquery-public-data.thelook_ecommerce.order_items`</span> oi
+<span class="keyword">LEFT JOIN</span> <span class="string">`bigquery-public-data.thelook_ecommerce.products`</span> p
+  <span class="keyword">ON</span> oi.product_id = p.id
+<span class="keyword">LEFT JOIN</span> <span class="string">`bigquery-public-data.thelook_ecommerce.users`</span> u
+  <span class="keyword">ON</span> oi.user_id = u.id
+<span class="keyword">LEFT JOIN</span> <span class="string">`bigquery-public-data.thelook_ecommerce.inventory_items`</span> ii
+  <span class="keyword">ON</span> oi.inventory_item_id = ii.id
+  
+<span class="keyword">WHERE</span> 
+  <span class="function">DATE</span>(oi.created_at) >= <span class="function">DATE_SUB</span>(<span class="function">CURRENT_DATE</span>(), <span class="keyword">INTERVAL</span> 12 <span class="keyword">MONTH</span>)
+  <span class="keyword">AND</span> oi.status <span class="keyword">IN</span> (<span class="string">'Complete'</span>, <span class="string">'Shipped'</span>)
+  
+<span class="keyword">GROUP BY</span> 1, 2, 3, 4, 5
+<span class="keyword">ORDER BY</span> 1 <span class="keyword">DESC</span>;
+                            </div>
+                            <p style="margin-top: 10px;"><strong>✅ Cette query processera ~200 MB et renverra ~15K lignes.</strong></p>
+                            
+                            <div style="background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                                <h4 style="color: #1e1b4b; margin-bottom: 15px; font-size: 1.1em;">📋 Structure de la Table Résultante (à connecter dans Looker Studio)</h4>
+                                <p style="color: #64748b; margin-bottom: 15px; font-size: 0.95em;">Voici à quoi ressemblera votre table après exécution de la query. C'est CETTE structure que vous allez connecter à Looker Studio :</p>
+                                
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85em; font-family: 'Courier New', monospace;">
+                                        <thead>
+                                            <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+                                                <th style="padding: 10px; text-align: left; color: #1e1b4b; font-weight: 600; white-space: nowrap;">Colonne</th>
+                                                <th style="padding: 10px; text-align: left; color: #1e1b4b; font-weight: 600;">Type</th>
+                                                <th style="padding: 10px; text-align: left; color: #1e1b4b; font-weight: 600;">Exemple Valeur</th>
+                                                <th style="padding: 10px; text-align: left; color: #1e1b4b; font-weight: 600;">Usage dans Looker Studio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">date_commande</td>
+                                                <td style="padding: 10px; color: #64748b;">DATE</td>
+                                                <td style="padding: 10px; color: #64748b;">2024-12-15</td>
+                                                <td style="padding: 10px; color: #64748b;">📅 Dimension temporelle (axe X des graphiques)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">categorie</td>
+                                                <td style="padding: 10px; color: #64748b;">STRING</td>
+                                                <td style="padding: 10px; color: #64748b;">Jeans</td>
+                                                <td style="padding: 10px; color: #64748b;">🏷️ Dimension (filtres, répartitions)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">marque</td>
+                                                <td style="padding: 10px; color: #64748b;">STRING</td>
+                                                <td style="padding: 10px; color: #64748b;">Levi's</td>
+                                                <td style="padding: 10px; color: #64748b;">🏷️ Dimension (Top 10 marques)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">pays</td>
+                                                <td style="padding: 10px; color: #64748b;">STRING</td>
+                                                <td style="padding: 10px; color: #64748b;">United States</td>
+                                                <td style="padding: 10px; color: #64748b;">🌍 Dimension (analyse géo)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">canal</td>
+                                                <td style="padding: 10px; color: #64748b;">STRING</td>
+                                                <td style="padding: 10px; color: #64748b;">Organic</td>
+                                                <td style="padding: 10px; color: #64748b;">📱 Dimension (canaux acquisition)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0; background: #fef3c7;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">commandes</td>
+                                                <td style="padding: 10px; color: #78350f;">INTEGER</td>
+                                                <td style="padding: 10px; color: #78350f;">142</td>
+                                                <td style="padding: 10px; color: #78350f;">📊 MÉTRIQUE (à sommer dans les graphiques)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0; background: #fef3c7;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">clients</td>
+                                                <td style="padding: 10px; color: #78350f;">INTEGER</td>
+                                                <td style="padding: 10px; color: #78350f;">98</td>
+                                                <td style="padding: 10px; color: #78350f;">📊 MÉTRIQUE (nb clients uniques)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0; background: #fef3c7;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">ca</td>
+                                                <td style="padding: 10px; color: #78350f;">FLOAT</td>
+                                                <td style="padding: 10px; color: #78350f;">12547.89</td>
+                                                <td style="padding: 10px; color: #78350f;">💰 MÉTRIQUE (Chiffre d'Affaires)</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid #e2e8f0; background: #fef3c7;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">couts</td>
+                                                <td style="padding: 10px; color: #78350f;">FLOAT</td>
+                                                <td style="padding: 10px; color: #78350f;">4892.34</td>
+                                                <td style="padding: 10px; color: #78350f;">📉 MÉTRIQUE (Coûts d'achat)</td>
+                                            </tr>
+                                            <tr style="background: #fef3c7;">
+                                                <td style="padding: 10px; color: #3730a3; font-weight: 600;">marge</td>
+                                                <td style="padding: 10px; color: #78350f;">FLOAT</td>
+                                                <td style="padding: 10px; color: #78350f;">7655.55</td>
+                                                <td style="padding: 10px; color: #78350f;">📈 MÉTRIQUE (Marge brute €)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="tip-box" style="margin-top: 15px;">
+                                    <h4>💡 Comprendre la Structure</h4>
+                                    <p><strong>Dimensions (blanc) :</strong> Servent à segmenter, filtrer, grouper. Exemple : "CA par pays" → pays est la dimension.<br>
+                                    <strong>Métriques (jaune) :</strong> Chiffres à agréger (SUM, AVG, COUNT). Exemple : "Total CA" → SUM(ca).<br><br>
+                                    <strong>Règle :</strong> Dans Looker Studio, les champs calculés combinent des métriques. Ex: Panier Moyen = SUM(ca) / SUM(commandes).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                
+                <div class="use-case">
+                    <h3>📊 ÉTAPE 3 : Créer les Graphiques Looker Studio</h3>
+                    <p>Pour chaque question business, vous devez créer le bon graphique avec les bonnes métriques.</p>
+                    
+                    <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 18px; border-radius: 8px; margin: 20px 0;">
+                        <h4 style="color: #1e40af; margin-bottom: 10px;">📌 Exemple Détaillé : Q1 - Évolution du Panier Moyen</h4>
+                        <p style="color: #1e3a8a; line-height: 1.6; margin-bottom: 15px;"><strong>Objectif :</strong> Visualiser l'évolution du panier moyen par jour avec possibilité de filtrer par catégorie.</p>
+                        
+                        <details style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                            <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 1 : Quel champ calculé créer ?</summary>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                                <p><strong>Problème :</strong> Si vous faites CA / Commandes directement dans BigQuery, le panier moyen sera faux quand vous filtrez par catégorie (problème de pondération).</p>
+                                <p style="margin-top: 10px;"><strong>Solution :</strong> Créer un champ calculé dans Looker Studio :</p>
+                                <div class="code-block" style="margin-top: 10px;">
+<span class="comment">-- Nom du champ : Panier_Moyen</span>
+<span class="keyword">SAFE_DIVIDE</span>(<span class="function">SUM</span>(ca), <span class="function">SUM</span>(commandes))
+
+<span class="comment">-- Format : Devise (USD $)</span>
+                                </div>
+                                <p style="margin-top: 10px;"><strong>Pourquoi SAFE_DIVIDE ?</strong> Pour éviter les erreurs de division par zéro si certains filtres ne renvoient aucune commande.</p>
+                            </div>
+                        </details>
+                        
+                        <details style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                            <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 2 : Quel type de graphique ?</summary>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                                <p><strong>Type recommandé :</strong> Time Series Chart (Graphique chronologique)</p>
+                                <p style="margin-top: 10px;"><strong>Configuration :</strong></p>
+                                <ul style="margin-left: 20px; line-height: 1.8;">
+                                    <li><strong>Dimension :</strong> date_commande</li>
+                                    <li><strong>Métrique :</strong> Panier_Moyen (votre champ calculé)</li>
+                                    <li><strong>Granularité :</strong> Jour (ou Semaine/Mois selon le besoin)</li>
+                                </ul>
+                            </div>
+                        </details>
+                        
+                        <details style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                            <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 3 : Comment ajouter les filtres par dimension ?</summary>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                                <p><strong>Option A - Breaking Dimension :</strong></p>
+                                <ul style="margin-left: 20px; line-height: 1.8;">
+                                    <li>Dans le graphique, ajoutez une "Dimension de répartition" (Breakdown dimension)</li>
+                                    <li>Sélectionnez "categorie"</li>
+                                    <li>Résultat : Une courbe par catégorie (multicolore)</li>
+                                </ul>
+                                
+                                <p style="margin-top: 15px;"><strong>Option B - Filtre interactif :</strong></p>
+                                <ul style="margin-left: 20px; line-height: 1.8;">
+                                    <li>Ajoutez un contrôle "Liste déroulante" (Dropdown)</li>
+                                    <li>Dimension de contrôle : "categorie"</li>
+                                    <li>Résultat : L'utilisateur choisit UNE catégorie à la fois</li>
+                                </ul>
+                            </div>
+                        </details>
+                        
+                        <details style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
+                            <summary style="font-weight: 600; color: #3730a3; cursor: pointer;">💡 Indice 4 : Comment formater joliment ? (Exemple visuel)</summary>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #cbd5e1;">
+                                <p><strong>Style recommandé :</strong></p>
+                                <ul style="margin-left: 20px; line-height: 1.8;">
+                                    <li><strong>Couleur de ligne :</strong> #3730a3 (bleu professionnel)</li>
+                                    <li><strong>Épaisseur :</strong> 3px</li>
+                                    <li><strong>Style de ligne :</strong> Smooth (lissée)</li>
+                                    <li><strong>Points de données :</strong> Activés (pour voir les valeurs précises)</li>
+                                    <li><strong>Axe Y :</strong> Commencer à 0 pour éviter les biais visuels</li>
+                                    <li><strong>Titre :</strong> "Evolution du Panier Moyen - 12 derniers mois"</li>
+                                </ul>
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='250' viewBox='0 0 600 250'%3E%3Crect fill='%23f8fafc' width='600' height='250'/%3E%3Ctext x='20' y='30' font-family='Arial' font-size='16' font-weight='bold' fill='%231e1b4b'%3EEvolution du Panier Moyen - 12 derniers mois%3C/text%3E%3Cline x1='50' y1='220' x2='550' y2='220' stroke='%23cbd5e1' stroke-width='2'/%3E%3Cline x1='50' y1='50' x2='50' y2='220' stroke='%23cbd5e1' stroke-width='2'/%3E%3Cpolyline fill='none' stroke='%233730a3' stroke-width='3' points='50,180 100,160 150,170 200,140 250,130 300,145 350,120 400,125 450,110 500,115 550,100'/%3E%3Ccircle cx='50' cy='180' r='4' fill='%233730a3'/%3E%3Ccircle cx='100' cy='160' r='4' fill='%233730a3'/%3E%3Ccircle cx='200' cy='140' r='4' fill='%233730a3'/%3E%3Ccircle cx='350' cy='120' r='4' fill='%233730a3'/%3E%3Ccircle cx='550' cy='100' r='4' fill='%233730a3'/%3E%3Ctext x='20' y='225' font-family='Arial' font-size='12' fill='%2364748b'%3E$0%3C/text%3E%3Ctext x='10' y='135' font-family='Arial' font-size='12' fill='%2364748b'%3E$50%3C/text%3E%3Ctext x='5' y='65' font-family='Arial' font-size='12' fill='%2364748b'%3E$100%3C/text%3E%3Ctext x='40' y='240' font-family='Arial' font-size='10' fill='%2364748b'%3EJan%3C/text%3E%3Ctext x='290' y='240' font-family='Arial' font-size='10' fill='%2364748b'%3EJun%3C/text%3E%3Ctext x='530' y='240' font-family='Arial' font-size='10' fill='%2364748b'%3EDec%3C/text%3E%3C/svg%3E" alt="Exemple graphique" style="margin-top: 15px; border-radius: 8px; border: 1px solid #e2e8f0; max-width: 100%;">
+                            </div>
+                        </details>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h4>💡 Approche pour les 7 autres questions</h4>
+                        <p>Utilisez la même méthodologie :<br>
+                        1️⃣ Identifiez les <strong>champs calculés</strong> nécessaires (taux marge, marge par client, etc.)<br>
+                        2️⃣ Choisissez le <strong>bon type de graphique</strong> (table, bar chart, pie chart, scorecard...)<br>
+                        3️⃣ Configurez les <strong>dimensions et métriques</strong> appropriées<br>
+                        4️⃣ Ajoutez des <strong>filtres interactifs</strong> pour l'exploration<br>
+                        5️⃣ Soignez le <strong>formatting</strong> (couleurs, titres, légendes)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QCM SECTION -->
+            <div class="section">
+                <h2>✅ Quiz de Validation (12 Questions)</h2>
+                <p style="color: #64748b; margin-bottom: 30px; line-height: 1.6;">Ces questions testent votre capacité à prendre les bonnes décisions techniques dans un workflow BigQuery → Looker Studio réel. Répondez en vous mettant dans la peau d'un Data Analyst sous pression.</p>
+                
+                <form id="qcmForm">
+                    <!-- Q1 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 1 / 12</div>
+                        <div class="question-text">Vous devez analyser les ventes des 12 derniers mois. La table "transactions" fait 24.5 GB et est partitionnée par "transaction_date". Quelle approche optimise le coût ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q1_a" name="q1" value="a">
+                                <label for="q1_a">SELECT * FROM transactions WHERE transaction_date >= '2024-01-01'</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_b" name="q1" value="b">
+                                <label for="q1_b">SELECT * FROM transactions LIMIT 100000</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_c" name="q1" value="c">
+                                <label for="q1_c">SELECT date, channel, SUM(revenue) FROM transactions WHERE transaction_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH) GROUP BY 1,2</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q1_d" name="q1" value="d">
+                                <label for="q1_d">Utiliser la table pré-agrégée "transactions_agg_daily" (180 MB)</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q1', 'c', '✅ Correct ! L\'option C combine le meilleur des deux mondes : filtre sur la date (réduit le volume) + agrégation (réduit les lignes). Pour ce cas, la table order_items (~500 MB complète) sera réduite à ~200 MB avec le filtre 12 mois, puis agrégée pour donner ~15K lignes. C\'est l\'approche optimale. Note : Il n\'existe pas toujours de table pré-agrégée disponible dans les projets réels.')">Valider</button>
+                        <div id="feedback-q1" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q2 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 2 / 12</div>
+                        <div class="question-text">Looker Studio affiche "Query execution failed: Resources exceeded during query execution". Que s'est-il passé ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q2_a" name="q2" value="a">
+                                <label for="q2_a">BigQuery a atteint la limite de 500 GB/mois de votre équipe</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_b" name="q2" value="b">
+                                <label for="q2_b">La query renvoie > 100K lignes (limite Looker Studio)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_c" name="q2" value="c">
+                                <label for="q2_c">La query est trop lente (timeout après 30 secondes)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q2_d" name="q2" value="d">
+                                <label for="q2_d">Vous n'avez pas les permissions sur le dataset BigQuery</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q2', 'b', '✅ Correct ! Looker Studio a une limite technique de 100K lignes par requête connectée. Solution : Pré-agréger davantage dans BigQuery (GROUP BY par mois/catégorie au lieu de par transaction). Ajoutez un COUNT(*) dans votre query pour vérifier le nombre de lignes avant de connecter.')">Valider</button>
+                        <div id="feedback-q2" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q3 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 3 / 12</div>
+                        <div class="question-text">Vous voulez calculer le "Taux de conversion" (Transactions / Visites). Où faire ce calcul ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q3_a" name="q3" value="a">
+                                <label for="q3_a">Dans BigQuery : SELECT SAFE_DIVIDE(transactions, visites) AS cvr</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_b" name="q3" value="b">
+                                <label for="q3_b">Dans Looker Studio : Champ calculé SAFE_DIVIDE(SUM(transactions), SUM(visites))</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_c" name="q3" value="c">
+                                <label for="q3_c">Les deux approches sont équivalentes</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q3_d" name="q3" value="d">
+                                <label for="q3_d">Dans BigQuery mais avec une window function PARTITION BY</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q3', 'b', '✅ Correct ! Pour les ratios simples, calculer dans Looker Studio permet de bénéficier des comparaisons temporelles natives (vs période précédente, vs année N-1). Si vous calculez le ratio en BigQuery, ces fonctionnalités ne marcheront pas. Règle : Ratios = Looker Studio | Agrégations complexes = BigQuery.')">Valider</button>
+                        <div id="feedback-q3" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q4 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 4 / 12</div>
+                        <div class="question-text">Votre dashboard Looker Studio prend 45 secondes à charger. Quelle est la PREMIÈRE action à prendre ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q4_a" name="q4" value="a">
+                                <label for="q4_a">Activer le cache dans Looker Studio (Data freshness = 12h)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_b" name="q4" value="b">
+                                <label for="q4_b">Vérifier le nombre de lignes renvoyées par la query BigQuery</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_c" name="q4" value="c">
+                                <label for="q4_c">Réduire le nombre de graphiques sur la page</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q4_d" name="q4" value="d">
+                                <label for="q4_d">Passer à un abonnement Looker Studio Pro</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q4', 'b', '✅ Correct ! Toujours diagnostiquer la source du problème avant d\'optimiser. Si votre query renvoie 80K lignes alors que vous affichez seulement un graphique par mois (12 points), vous transférez 79,988 lignes inutiles. Solution : Pré-agréger à la granularité nécessaire dans BigQuery. L\'option A (cache) masque le problème sans le résoudre.')">Valider</button>
+                        <div id="feedback-q4" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q5 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 5 / 12</div>
+                        <div class="question-text">Vous devez faire un classement "Top 10 produits par CA". Où créer ce classement ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q5_a" name="q5" value="a">
+                                <label for="q5_a">BigQuery : Ajouter RANK() OVER (ORDER BY SUM(revenue) DESC) puis filtrer WHERE rank <= 10</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_b" name="q5" value="b">
+                                <label for="q5_b">Looker Studio : Créer une table avec dimension "produit", métrique "CA", tri décroissant, limiter à 10 lignes</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_c" name="q5" value="c">
+                                <label for="q5_c">BigQuery avec ORDER BY et LIMIT 10</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q5_d" name="q5" value="d">
+                                <label for="q5_d">Excel : Exporter les données et faire un tableau croisé dynamique</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q5', 'b', '✅ Correct ! Pour un simple Top N, utilisez les fonctionnalités natives de Looker Studio (tri + limite). C\'est plus flexible car l\'utilisateur peut changer le Top 10 en Top 20 sans retoucher au SQL. RANK() en BigQuery est utile pour des classements complexes (ex: Top 3 par catégorie), pas pour un simple Top global.')">Valider</button>
+                        <div id="feedback-q5" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q6 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 6 / 12</div>
+                        <div class="question-text">Le CMO veut voir "CA Septembre 2025 vs Septembre 2024". Comment implémenter cette comparaison ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q6_a" name="q6" value="a">
+                                <label for="q6_a">BigQuery : Deux requêtes séparées (2024 et 2025) puis faire un UNION ALL</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_b" name="q6" value="b">
+                                <label for="q6_b">BigQuery : Utiliser LAG() OVER (PARTITION BY mois ORDER BY annee)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_c" name="q6" value="c">
+                                <label for="q6_c">Looker Studio : Créer une métrique "CA" avec comparaison de période "Période précédente" configurée sur "Même période année précédente"</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q6_d" name="q6" value="d">
+                                <label for="q6_d">Impossible sans créer deux dashboards distincts</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q6', 'c', '✅ Correct ! Looker Studio gère nativement les comparaisons temporelles (vs période précédente, vs année N-1, vs date personnalisée). C\'est THE killer feature de Looker Studio. Inutile de coder cela en SQL. Envoyer simplement "date" + "ca" depuis BigQuery, Looker Studio fait le reste.')">Valider</button>
+                        <div id="feedback-q6" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q7 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 7 / 12</div>
+                        <div class="question-text">Vous avez 3 sources de données dans votre dashboard (Ventes, Stocks, Marketing). Looker Studio devient très lent. Pourquoi ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q7_a" name="q7" value="a">
+                                <label for="q7_a">Looker Studio exécute 3 requêtes BigQuery séparées à chaque chargement</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_b" name="q7" value="b">
+                                <label for="q7_b">Les 3 sources ne sont pas jointes correctement</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_c" name="q7" value="c">
+                                <label for="q7_c">Il faut activer "Data blending" pour fusionner les sources</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q7_d" name="q7" value="d">
+                                <label for="q7_d">Il faut créer UNE SEULE custom query BigQuery qui JOIN les 3 tables en amont</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q7', 'd', '✅ Correct ! Best practice : Faire les JOINs dans BigQuery, pas dans Looker Studio. Data blending (option C) fonctionne mais est plus lent et limité. Une query SQL bien écrite avec LEFT JOIN entre ventes, stocks et marketing donnera un dashboard 10x plus rapide. Règle : 1 dashboard = 1 custom query BigQuery optimisée.')">Valider</button>
+                        <div id="feedback-q7" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q8 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 8 / 12</div>
+                        <div class="question-text">Votre query BigQuery renvoie 8,000 lignes mais Looker Studio affiche "No data". Quelle est la cause probable ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q8_a" name="q8" value="a">
+                                <label for="q8_a">Le filtre de date dans Looker Studio ne correspond à aucune ligne</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_b" name="q8" value="b">
+                                <label for="q8_b">Vous n'avez pas défini de dimension dans vos graphiques</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_c" name="q8" value="c">
+                                <label for="q8_c">La colonne "date" n'est pas reconnue comme type DATE par Looker Studio</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q8_d" name="q8" value="d">
+                                <label for="q8_d">BigQuery a planté silencieusement</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q8', 'c', '✅ Correct ! Piège fréquent : Si votre colonne date est au format STRING (ex: \"2025-01-15\") et non DATE, Looker Studio ne la reconnaîtra pas comme dimension temporelle. Solution : Dans BigQuery, utiliser DATE(transaction_date) ou PARSE_DATE(). Vérifiez toujours le type de données dans l\'onglet \"Schéma\" de Looker Studio.')">Valider</button>
+                        <div id="feedback-q8" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q9 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 9 / 12</div>
+                        <div class="question-text">Vous créez un champ calculé "Marge %" dans Looker Studio : SUM(marge) / SUM(ca). Mais le résultat est 0.35 au lieu de 35%. Pourquoi ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q9_a" name="q9" value="a">
+                                <label for="q9_a">Il faut multiplier par 100 : (SUM(marge) / SUM(ca)) * 100</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_b" name="q9" value="b">
+                                <label for="q9_b">Il faut changer le format du champ en "Pourcentage" dans Looker Studio</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_c" name="q9" value="c">
+                                <label for="q9_c">Les données sources sont incorrectes</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q9_d" name="q9" value="d">
+                                <label for="q9_d">Il faut utiliser SAFE_DIVIDE au lieu de /</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q9', 'b', '✅ Correct ! Le calcul est juste (0.35 = 35%), il suffit de formater le champ en \"Pourcentage\" dans les propriétés du champ. Looker Studio multipliera automatiquement par 100 et ajoutera le symbole %. Ne PAS multiplier par 100 dans la formule (option A) sinon le format % donnera 3500%.')">Valider</button>
+                        <div id="feedback-q9" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q10 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 10 / 12</div>
+                        <div class="question-text">Le CFO veut un graphique "Évolution du CA par semaine". Quelle granularité utiliser dans BigQuery ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q10_a" name="q10" value="a">
+                                <label for="q10_a">GROUP BY transaction_date (jour) puis agréger en semaine dans Looker Studio</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_b" name="q10" value="b">
+                                <label for="q10_b">GROUP BY DATE_TRUNC(transaction_date, WEEK) directement dans BigQuery</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_c" name="q10" value="c">
+                                <label for="q10_c">GROUP BY EXTRACT(WEEK FROM transaction_date)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q10_d" name="q10" value="d">
+                                <label for="q10_d">Envoyer toutes les transactions (sans GROUP BY) et laisser Looker Studio agréger</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q10', 'a', '✅ Correct ! Toujours envoyer la granularité la plus fine qui reste raisonnable (jour). Pourquoi ? Cela permet au CFO de switcher entre vue semaine/mois/trimestre dans Looker Studio sans retoucher au SQL. Si vous agrégez par semaine en BigQuery (option B), impossible de voir par jour ensuite. Règle : Flexibilité > Optimisation prématurée.')">Valider</button>
+                        <div id="feedback-q10" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q11 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 11 / 12</div>
+                        <div class="question-text">Vous voulez analyser "Les 5% de clients qui génèrent 50% du CA" (analyse Pareto). Où faire ce calcul ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q11_a" name="q11" value="a">
+                                <label for="q11_a">BigQuery : Window function avec PERCENT_RANK() et SUM() OVER (ORDER BY ca DESC)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_b" name="q11" value="b">
+                                <label for="q11_b">Looker Studio : Champ calculé avec RUNNING_TOTAL()</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_c" name="q11" value="c">
+                                <label for="q11_c">Excel : Exporter et faire un graphique Pareto</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q11_d" name="q11" value="d">
+                                <label for="q11_d">Impossible sans Python/R</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q11', 'a', '✅ Correct ! Les analyses Pareto nécessitent des window functions (cumulative sum, percentiles) que Looker Studio ne gère pas nativement. Vous DEVEZ faire ce calcul en BigQuery. Créez une colonne \"ca_cumule_pct\" avec SUM(ca) OVER (ORDER BY ca DESC ROWS UNBOUNDED PRECEDING) / SUM(ca) OVER (). C\'est un cas où BigQuery est indispensable.')">Valider</button>
+                        <div id="feedback-q11" class="feedback"></div>
+                    </div>
+                    
+                    <!-- Q12 -->
+                    <div class="qcm-question">
+                        <div class="question-number">Question 12 / 12</div>
+                        <div class="question-text">Votre dashboard est parfait en dev, mais en prod (avec données réelles), Looker Studio crashe. Quelle est la cause la plus probable ?</div>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q12_a" name="q12" value="a">
+                                <label for="q12_a">Vous avez testé avec LIMIT 1000, mais la query complète renvoie 250K lignes (> limite Looker Studio)</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_b" name="q12" value="b">
+                                <label for="q12_b">Les données de prod ont des valeurs NULL qui cassent vos champs calculés</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_c" name="q12" value="c">
+                                <label for="q12_c">BigQuery prod est plus lent que BigQuery dev</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q12_d" name="q12" value="d">
+                                <label for="q12_d">Vous n'avez pas les mêmes permissions en prod</label>
+                            </div>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="checkAnswer('q12', 'a', '✅ Correct ! Erreur CLASSIQUE : Tester avec LIMIT sans vérifier le volume réel. Solution : Avant de connecter à Looker Studio, faites un SELECT COUNT(*) FROM (votre_query) pour valider que vous êtes < 50K lignes. Si > 100K, Looker Studio plantera. Ajoutez toujours des filtres WHERE ou pré-agrégez davantage (GROUP BY plus large).')">Valider</button>
+                        <div id="feedback-q12" class="feedback"></div>
+                    </div>
+                    
+                </form>
+                
+                <div id="scoreSection" class="score-section">
+                    <h3>🎉 Quiz Terminé !</h3>
+                    <p>Votre performance :</p>
+                    <div class="score-number" id="scoreDisplay">0/12</div>
+                    <p class="score-message" id="scoreMessage"></p>
+                </div>
+            </div>
+            
+            <!-- SUBMISSION SECTION -->
+            <div class="section" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px; border-radius: 12px; margin-top: 40px;">
+                <h2 style="color: white; border-left: 5px solid #fbbf24; padding-left: 18px; margin-bottom: 25px;">🚀 Soumettez Votre Dashboard</h2>
+                
+                <div style="background: white; color: #1e1b4b; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <h3 style="color: #059669; margin-bottom: 20px; font-size: 1.4em;">📬 Obtenez un Feedback Personnalisé de CK Labs</h3>
+                    
+                    <p style="color: #475569; line-height: 1.8; margin-bottom: 20px;">Vous avez terminé votre dashboard ? Parfait ! Envoyez-le moi pour que je vous donne un retour détaillé sur :</p>
+                    
+                    <ul style="margin-left: 25px; margin-bottom: 25px; line-height: 2; color: #475569;">
+                        <li>✅ La pertinence de vos choix de visualisation</li>
+                        <li>✅ L'optimisation de vos queries BigQuery</li>
+                        <li>✅ La clarté et l'impact business de votre dashboard</li>
+                        <li>✅ Les points à améliorer pour passer au niveau Senior Analyst</li>
+                    </ul>
+                    
+                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                        <h4 style="color: #78350f; margin-bottom: 15px; font-size: 1.1em;">📋 Instructions de Soumission</h4>
+                        <ol style="margin-left: 20px; line-height: 2; color: #78350f;">
+                            <li><strong>Partagez l'accès EDIT à votre dashboard :</strong>
+                                <ul style="margin-left: 20px; margin-top: 8px;">
+                                    <li>Dans Looker Studio, cliquez sur "Partager" (en haut à droite)</li>
+                                    <li>Ajoutez l'email : <code style="background: white; padding: 2px 6px; border-radius: 4px; color: #3730a3;">hello@cklabs.io</code></li>
+                                    <li>Donnez les droits <strong>"Éditeur"</strong> (pas "Lecteur")</li>
+                                </ul>
+                            </li>
+                            <li style="margin-top: 15px;"><strong>Récupérez le lien de partage :</strong>
+                                <ul style="margin-left: 20px; margin-top: 8px;">
+                                    <li>Cliquez sur "Copier le lien"</li>
+                                    <li>Assurez-vous que le lien est accessible à "Toute personne disposant du lien"</li>
+                                </ul>
+                            </li>
+                            <li style="margin-top: 15px;"><strong>Envoyez-moi un email à <code style="background: white; padding: 2px 6px; border-radius: 4px; color: #3730a3;">hello@cklabs.io</code> avec :</strong>
+                                <ul style="margin-left: 20px; margin-top: 8px;">
+                                    <li><strong>Objet :</strong> "[F2 Dashboard] Votre Prénom Nom"</li>
+                                    <li><strong>Corps :</strong> Le lien vers votre dashboard Looker Studio</li>
+                                    <li><strong>Optionnel :</strong> Vos questions spécifiques ou zones de doute</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                        <h4 style="color: #075985; margin-bottom: 12px; font-size: 1.1em;">⏱️ Délai de Réponse</h4>
+                        <p style="color: #0c4a6e; line-height: 1.7; margin: 0;">Je m'engage à vous répondre sous <strong>72 heures ouvrées</strong> avec un feedback vidéo ou écrit détaillé. Si je mets plus de temps, relancez-moi (parfois les emails se perdent) !</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="mailto:hello@cklabs.io?subject=[F2%20Dashboard]%20Mon%20Prénom%20Nom&body=Bonjour%20Chris%2C%0A%0AVoici%20le%20lien%20vers%20mon%20dashboard%20Looker%20Studio%20%3A%0A%0A[COLLEZ%20VOTRE%20LIEN%20ICI]%0A%0AMerci%20pour%20ton%20retour%20%21" 
+                           style="display: inline-block; background: linear-gradient(135deg, #3730a3 0%, #1e1b4b 100%); color: white; padding: 18px 40px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1.1em; box-shadow: 0 6px 20px rgba(55, 48, 163, 0.3); transition: all 0.3s ease;"
+                           onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(55, 48, 163, 0.4)'"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 20px rgba(55, 48, 163, 0.3)'">
+                            📧 Envoyer Mon Dashboard à CK Labs
+                        </a>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #94a3b8;">(Le lien ouvre votre client email avec un template pré-rempli)</p>
+                    </div>
+                    
+                    <div class="tip-box" style="margin-top: 25px; background: #f1f5f9; border-left: 4px solid #3730a3;">
+                        <h4 style="color: #1e1b4b;">💡 Pourquoi Partager en Mode "Éditeur" ?</h4>
+                        <p style="color: #475569;">En mode "Éditeur", je peux voir vos champs calculés, vos filtres, la structure de votre query BigQuery connectée, et éventuellement faire des suggestions directement dans votre dashboard (que vous pourrez accepter ou refuser). C'est beaucoup plus pédagogique qu'un simple screenshot !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><strong>Formation F2 - BigQuery → Looker Studio</strong> | CK Labs © 2025<br>
+            Formation suivante : <strong>F3 - SQL Avancé & Window Functions</strong></p>
+        </footer>
+    </div>
+    
+    <script>
+        const answers = {
+            q1: 'c',
+            q2: 'b',
+            q3: 'b',
+            q4: 'b',
+            q5: 'b',
+            q6: 'c',
+            q7: 'd',
+            q8: 'c',
+            q9: 'b',
+            q10: 'a',
+            q11: 'a',
+            q12: 'a'
+        };
+        
+        let userAnswers = {};
+        
+        function checkAnswer(questionId, correctAnswer, explanation) {
+            const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${questionId}`);
+            
+            if (!selectedOption) {
+                alert('⚠️ Veuillez sélectionner une réponse avant de valider');
+                return;
+            }
+            
+            userAnswers[questionId] = selectedOption.value;
+            
+            const isCorrect = selectedOption.value === correctAnswer;
+            feedbackDiv.classList.add('show');
+            feedbackDiv.classList.remove('correct', 'incorrect');
+            feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            feedbackDiv.innerHTML = `
+                <div class="feedback-title">${isCorrect ? '✅ Correct !' : '❌ Incorrect'}</div>
+                <div class="feedback-text">${explanation}</div>
+            `;
+            
+            // Disable all options for this question
+            document.querySelectorAll(`input[name="${questionId}"]`).forEach(input => {
+                input.disabled = true;
+            });
+            
+            checkAllAnswered();
+        }
+        
+        function checkAllAnswered() {
+            let allAnswered = true;
+            let correctCount = 0;
+            
+            for (let i = 1; i <= 12; i++) {
+                const qId = `q${i}`;
+                if (!userAnswers[qId]) {
+                    allAnswered = false;
+                } else if (userAnswers[qId] === answers[qId]) {
+                    correctCount++;
+                }
+            }
+            
+            if (allAnswered) {
+                const scoreSection = document.getElementById('scoreSection');
+                scoreSection.classList.add('show');
+                
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                scoreDisplay.textContent = `${correctCount}/12`;
+                
+                const scoreMessage = document.getElementById('scoreMessage');
+                if (correctCount === 12) {
+                    scoreMessage.innerHTML = '🏆 <strong>PARFAIT !</strong> Vous maîtrisez le workflow BigQuery → Looker Studio. Vous êtes prêt pour travailler sur des projets data en production. Prochaine étape : F3 (Window Functions & Analytics avancées).';
+                } else if (correctCount >= 10) {
+                    scoreMessage.innerHTML = '🎯 <strong>Excellent !</strong> Vous avez compris les concepts clés. Révisez les 2 questions manquées et vous serez au niveau Senior Analyst.';
+                } else if (correctCount >= 8) {
+                    scoreMessage.innerHTML = '👍 <strong>Très bien !</strong> Vous avez les bases solides. Pratiquez sur un cas réel (votre propre dataset) avant de passer à F3.';
+                } else if (correctCount >= 6) {
+                    scoreMessage.innerHTML = '📚 <strong>Bon début !</strong> Certains concepts nécessitent plus de pratique. Refaites le module F1 (Looker Studio bases) puis revenez à F2.';
+                } else {
+                    scoreMessage.innerHTML = '🔄 <strong>À retravailler.</strong> Les concepts BigQuery → Looker Studio demandent de la pratique. Recommandation : Suivez le module F1 complet, puis refaites F2 dans 1 semaine.';
+                }
+                
+                // Scroll to score
+                scoreSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    </script>
+</body>
+</html>
